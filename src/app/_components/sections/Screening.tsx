@@ -15,7 +15,7 @@ export function Screening() {
 		<section className="section-pad bg-[color-mix(in_oklab,var(--bg),var(--ink)_3%)]">
 			<div className="wrap">
 				<Reveal className="flex items-center gap-4 mb-7">
-					<span className="num text-[12px] tracking-[0.14em] text-ink-mute uppercase">04</span>
+					<span className="num text-[12px] tracking-[0.14em] text-ink-mute uppercase">06</span>
 					<span className="flex-1 h-[1px] bg-hair" />
 					<span className="text-[11px] font-medium tracking-[0.14em] text-ink-mute uppercase">Tenant screening standards</span>
 				</Reveal>

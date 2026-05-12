@@ -5,15 +5,15 @@ import { CountUp } from "../ui/CountUp";
 import { cn } from "~/lib/utils";
 
 const LEASES = [
-	{ n: "King West", u: "1BR", listed: 2650, leased: 2675, days: 14 },
-	{ n: "Liberty Village", u: "2BR+den", listed: 3450, leased: 3400, days: 19 },
-	{ n: "CityPlace", u: "Jr 1BR", listed: 2200, leased: 2200, days: 11 },
-	{ n: "St. Lawrence", u: "1BR+den", listed: 2850, leased: 2900, days: 17 },
-	{ n: "Yonge & Eg", u: "2BR", listed: 3250, leased: 3200, days: 21 },
-	{ n: "The Annex", u: "1BR", listed: 2400, leased: 2400, days: 9 },
-	{ n: "Distillery", u: "1BR", listed: 2700, leased: 2675, days: 13 },
-	{ n: "Fort York", u: "2BR", listed: 3100, leased: 3150, days: 16 },
-	{ n: "Leslieville", u: "2BR+den", listed: 3550, leased: 3500, days: 20 },
+	{ n: "King West", u: "1BR", listed: 2650, leased: 2675, days: 14, signed: "Apr 2026" },
+	{ n: "Liberty Village", u: "2BR+den", listed: 3450, leased: 3400, days: 19, signed: "Apr 2026" },
+	{ n: "CityPlace", u: "Jr 1BR", listed: 2200, leased: 2200, days: 11, signed: "Mar 2026" },
+	{ n: "St. Lawrence", u: "1BR+den", listed: 2850, leased: 2900, days: 17, signed: "Mar 2026" },
+	{ n: "Yonge & Eg", u: "2BR", listed: 3250, leased: 3200, days: 21, signed: "Mar 2026" },
+	{ n: "The Annex", u: "1BR", listed: 2400, leased: 2400, days: 9, signed: "Feb 2026" },
+	{ n: "Distillery", u: "1BR", listed: 2700, leased: 2675, days: 13, signed: "Feb 2026" },
+	{ n: "Fort York", u: "2BR", listed: 3100, leased: 3150, days: 16, signed: "Feb 2026" },
+	{ n: "Leslieville", u: "2BR+den", listed: 3550, leased: 3500, days: 20, signed: "Jan 2026" },
 ];
 
 export function RecentLeases({ layout = "cards" }: { layout?: "cards" | "table" }) {
@@ -21,7 +21,7 @@ export function RecentLeases({ layout = "cards" }: { layout?: "cards" | "table" 
 		<section id="leases" className="section-pad">
 			<div className="wrap">
 				<Reveal className="flex items-center gap-4 mb-7">
-					<span className="num text-[12px] tracking-[0.14em] text-ink-mute uppercase">05</span>
+					<span className="num text-[12px] tracking-[0.14em] text-ink-mute uppercase">07</span>
 					<span className="flex-1 h-[1px] bg-hair" />
 					<span className="text-[11px] font-medium tracking-[0.14em] text-ink-mute uppercase">Recent leases</span>
 				</Reveal>
@@ -63,6 +63,10 @@ export function RecentLeases({ layout = "cards" }: { layout?: "cards" | "table" 
 											<span>Days to lease</span>
 											<span className="num text-ink">{l.days}</span>
 										</div>
+										<div className="flex justify-between text-[13px] text-ink-soft">
+											<span>Signed</span>
+											<span className="text-ink">{l.signed}</span>
+										</div>
 									</div>
 								</Reveal>
 							);
@@ -79,6 +83,7 @@ export function RecentLeases({ layout = "cards" }: { layout?: "cards" | "table" 
 									<th className="text-left p-4 max-md:p-3 text-[11px] uppercase tracking-[0.12em] text-ink-mute font-medium">Leased</th>
 									<th className="text-left p-4 max-md:p-3 text-[11px] uppercase tracking-[0.12em] text-ink-mute font-medium">Δ</th>
 									<th className="text-left p-4 max-md:p-3 text-[11px] uppercase tracking-[0.12em] text-ink-mute font-medium">Days</th>
+									<th className="text-left p-4 max-md:p-3 text-[11px] uppercase tracking-[0.12em] text-ink-mute font-medium">Signed</th>
 								</tr>
 							</thead>
 							<tbody>
@@ -94,6 +99,7 @@ export function RecentLeases({ layout = "cards" }: { layout?: "cards" | "table" 
 												{delta >= 0 ? "+" : "−"}${Math.abs(delta)}
 											</td>
 											<td className="p-4 max-md:p-3 text-[15px] num">{l.days}</td>
+											<td className="p-4 max-md:p-3 text-[15px] text-ink-soft">{l.signed}</td>
 										</tr>
 									);
 								})}

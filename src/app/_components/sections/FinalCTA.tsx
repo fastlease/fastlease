@@ -19,7 +19,8 @@ export function FinalCTA({ onOpenForm, onOpenCall }: FinalCTAProps) {
 				<Reveal as="h2" className="my-6 mb-4.5 max-w-[22ch]">Find out how fast your condo would lease.</Reveal>
 				<Reveal as="p" className="text-[17px] text-ink-soft max-w-[48ch] mb-9 leading-[1.55]">
 					A 60-second form returns an estimated days-to-lease, a suggested rent range, and
-					a recommended listing date. No call required unless you ask for one.
+					a recommended listing date. If we miss the 21-day mark when you engage us, our
+					fee drops 21%.
 				</Reveal>
 				<Reveal className="flex gap-4 flex-wrap justify-center">
 					<Button onClick={onOpenForm} showArrow>

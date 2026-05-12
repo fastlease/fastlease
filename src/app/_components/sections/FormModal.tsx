@@ -8,11 +8,12 @@ interface FormModalProps {
 	open: boolean;
 	onClose: () => void;
 	mode: "timeline" | "call";
+	onBookCall?: () => void;
 }
 
 const STEPS = 4; // 3 input + 1 result
 
-export function FormModal({ open, onClose, mode }: FormModalProps) {
+export function FormModal({ open, onClose, mode, onBookCall }: FormModalProps) {
 	const [step, setStep] = useState(0);
 	const [data, setData] = useState({
 		address: "",
@@ -99,7 +100,7 @@ export function FormModal({ open, onClose, mode }: FormModalProps) {
 							<div className="text-[11px] uppercase tracking-[0.14em] text-ink-mute">15-minute call</div>
 							<h3 className="text-[26px] font-medium tracking-[-0.02em] mt-2">Pick a window that works.</h3>
 						</div>
-						<button className="appearance-none cursor-default text-[22px] text-ink-mute w-8 h-8 grid place-items-center rounded-lg hover:bg-hair hover:text-ink outline-none" onClick={onClose} aria-label="Close">×</button>
+						<button className="appearance-none cursor-pointer text-[22px] text-ink-mute w-8 h-8 grid place-items-center rounded-lg hover:bg-hair hover:text-ink outline-none" onClick={onClose} aria-label="Close">×</button>
 					</div>
 					<div className="px-7 max-sm:px-[22px] pt-2 pb-7 overflow-y-auto">
 						<p className="text-[15px] text-ink-soft max-w-[50ch] mb-6">
@@ -154,7 +155,7 @@ export function FormModal({ open, onClose, mode }: FormModalProps) {
 					<div>
 						<div className="text-[11px] uppercase tracking-[0.14em] text-ink-mute">Leasing timeline · 60 seconds</div>
 					</div>
-					<button className="appearance-none cursor-default text-[22px] text-ink-mute w-8 h-8 grid place-items-center rounded-lg hover:bg-hair hover:text-ink outline-none" onClick={onClose} aria-label="Close">×</button>
+					<button className="appearance-none cursor-pointer text-[22px] text-ink-mute w-8 h-8 grid place-items-center rounded-lg hover:bg-hair hover:text-ink outline-none" onClick={onClose} aria-label="Close">×</button>
 				</div>
 				
 				<div className="flex gap-1.5 px-7 max-sm:px-[22px] pb-[18px] mt-2">
@@ -198,7 +199,7 @@ export function FormModal({ open, onClose, mode }: FormModalProps) {
 									<button 
 										key={b} 
 										className={cn(
-											"appearance-none cursor-default text-center h-12 grid place-items-center border border-hair-strong rounded-lg text-[15px] transition-colors",
+											"appearance-none cursor-pointer text-center h-12 grid place-items-center border border-hair-strong rounded-lg text-[15px] transition-colors hover:border-ink",
 											data.bedrooms === b && "border-ink bg-[color-mix(in_oklab,var(--color-ink),transparent_96%)]"
 										)} 
 										onClick={() => set("bedrooms", b)}
@@ -226,7 +227,7 @@ export function FormModal({ open, onClose, mode }: FormModalProps) {
 									<button 
 										key={o.k} 
 										className={cn(
-											"appearance-none cursor-default text-center h-12 grid place-items-center border border-hair-strong rounded-lg text-[15px] transition-colors",
+											"appearance-none cursor-pointer text-center h-12 grid place-items-center border border-hair-strong rounded-lg text-[15px] transition-colors hover:border-ink",
 											data.move === o.k && "border-ink bg-[color-mix(in_oklab,var(--color-ink),transparent_96%)]"
 										)} 
 										onClick={() => set("move", o.k)}
@@ -288,18 +289,32 @@ export function FormModal({ open, onClose, mode }: FormModalProps) {
 							</div>
 						)}
 
-						<div className="flex gap-3 mt-5 flex-wrap">
-							<Button onClick={onClose} className="px-5 text-[15px]" showArrow>Email me this estimate</Button>
-							<Button variant="ghost" onClick={() => setStep(0)} className="px-5 text-[15px]">Start over</Button>
+						<div className="flex gap-3 mt-6 flex-wrap items-center">
+							<Button
+								onClick={() => {
+									onClose();
+									onBookCall?.();
+								}}
+								className="px-5 text-[15px]"
+								showArrow
+							>
+								Book your 15-minute kickoff
+							</Button>
+							<Button variant="ghost" onClick={onClose} className="px-5 text-[15px]">
+								Email me this estimate
+							</Button>
 						</div>
+						<p className="text-[13px] text-ink-mute mt-3.5 max-w-[52ch]">
+							The call covers your unit specifically — pricing, photography window, and the exact 21-day calendar. No pitch deck.
+						</p>
 					</div>
 				)}
 
 				{step < 3 && (
 					<div className="flex justify-between items-center py-[18px] px-7 max-sm:px-[22px] border-t border-hair bg-[color-mix(in_oklab,var(--bg,#FAF8F3),var(--color-ink)_2%)] mt-auto">
-						<button 
-							className="appearance-none cursor-default text-[14px] text-ink-mute hover:text-ink disabled:opacity-30 disabled:hover:text-ink-mute transition-opacity" 
-							onClick={() => setStep(Math.max(0, step - 1))} 
+						<button
+							className="appearance-none cursor-pointer text-[14px] text-ink-mute hover:text-ink disabled:opacity-30 disabled:hover:text-ink-mute disabled:cursor-not-allowed transition-opacity"
+							onClick={() => setStep(Math.max(0, step - 1))}
 							disabled={step === 0}
 						>
 							← Back

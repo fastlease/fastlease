@@ -22,7 +22,7 @@ export const Button: FC<ButtonProps> = ({
 	return (
 		<button
 			className={cn(
-				"inline-flex items-center justify-center gap-[10px] h-[52px] px-[22px] rounded-full font-medium text-[16px] transition-all duration-120 cursor-default outline-none",
+				"inline-flex items-center justify-center gap-[10px] h-[52px] px-[22px] rounded-full font-medium text-[16px] transition-all duration-120 cursor-pointer outline-none",
 				variants[variant],
 				className
 			)}

@@ -7,8 +7,8 @@ const PHASE_CARDS = [
 	{
 		days: "Days 1–3",
 		title: "Listed and live.",
-		body: "A pricing analysis against comparable units in the building (not just the neighborhood). Professional photography. Syndication across fourteen platforms — including the three Toronto landlords actually use.",
-		bullets: ["Comparable-unit pricing", "Professional photography", "Listed across 14 platforms"],
+		body: "A pricing analysis against comparable units in the building, not just the neighborhood. Professional photography. Day-one featured placement on property.ca and condos.ca — plus syndication to twelve more platforms.",
+		bullets: ["Comparable-unit pricing", "Professional photography", "property.ca + condos.ca on day one"],
 	},
 	{
 		days: "Days 4–14",
@@ -29,7 +29,7 @@ export function HowItWorks() {
 		<section id="how" className="section-pad">
 			<div className="wrap">
 				<Reveal className="flex items-center gap-4 mb-7">
-					<span className="num text-[12px] tracking-[0.14em] text-ink-mute uppercase">03</span>
+					<span className="num text-[12px] tracking-[0.14em] text-ink-mute uppercase">04</span>
 					<span className="flex-1 h-[1px] bg-hair" />
 					<span className="text-[11px] font-medium tracking-[0.14em] text-ink-mute uppercase">How it works</span>
 				</Reveal>
@@ -37,8 +37,8 @@ export function HowItWorks() {
 				<Reveal as="h2" className="max-w-[22ch] mb-4">Three phases. Nine days of slack built in.</Reveal>
 				<Reveal as="p" className="text-[17px] text-ink-soft max-w-[60ch] mb-14 leading-[1.55]">
 					The schedule below is what we plan to. The guarantee is what we promise. The gap
-					between the two is deliberate — and the reason landlords stop reading other
-					leasing sites once they reach this section.
+					between them is deliberate — and if we close it slower than twenty-one days,
+					our fee drops by twenty-one percent.
 				</Reveal>
 
 				<div className="grid grid-cols-3 max-lg:grid-cols-1 gap-5">

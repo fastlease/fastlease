@@ -12,7 +12,7 @@ export function Pricing({ onOpenForm }: PricingProps) {
 		<section id="pricing" className="section-pad">
 			<div className="wrap">
 				<Reveal className="flex items-center gap-4 mb-7">
-					<span className="num text-[12px] tracking-[0.14em] text-ink-mute uppercase">06</span>
+					<span className="num text-[12px] tracking-[0.14em] text-ink-mute uppercase">08</span>
 					<span className="flex-1 h-[1px] bg-hair" />
 					<span className="text-[11px] font-medium tracking-[0.14em] text-ink-mute uppercase">Pricing & guarantee terms</span>
 				</Reveal>
@@ -38,14 +38,14 @@ export function Pricing({ onOpenForm }: PricingProps) {
 					<Reveal className="p-9 max-md:p-7 flex flex-col gap-3.5 bg-[color-mix(in_oklab,var(--accent),var(--bg,#FAF8F3)_90%)] border border-[color-mix(in_oklab,var(--accent),transparent_70%)] rounded-[14px]">
 						<div className="text-[11px] font-medium tracking-[0.12em] text-accent uppercase">The 21-day guarantee</div>
 						<div className="my-1.5 mb-2">
-							<span className="text-[clamp(28px,3vw,38px)] font-medium tracking-[-0.025em] num">Day 22 → you don&apos;t pay.</span>
+							<span className="text-[clamp(28px,3vw,38px)] font-medium tracking-[-0.025em] num">Day 22 → 21% off the fee.</span>
 						</div>
-						<div className="text-[15px] text-ink-soft mb-3">In plain English, in three bullets, on the homepage.</div>
+						<div className="text-[15px] text-ink-soft mb-3">Skin in the game, in writing. Not contingent payment in a dress.</div>
 						<ol className="list-none p-0 m-0 flex flex-col gap-3">
 							{[
-								{ num: "01", text: "If no qualified tenant has signed by end of day 21, the fee is suspended. We continue to work without invoicing." },
-								{ num: "02", text: "If we lease the unit afterward, the original flat fee applies — never any escalation." },
-								{ num: "03", text: "Exclusions are listed once, plainly: owners requesting list pricing >5% above our recommended range, or units with active building disputes." },
+								{ num: "01", text: "If no qualified tenant has signed by end of day 21, your fee is automatically reduced by 21%. The discount applies whenever the lease is eventually signed." },
+								{ num: "02", text: "If we sign before day 21, the original flat fee applies — never any escalation, never any re-list surcharge." },
+								{ num: "03", text: "Exclusions, listed once: owners requesting list pricing >5% above our recommended range, or units with active building disputes. We will say so before you sign." },
 							].map((li, i) => (
 								<li key={i} className="text-[15px] text-ink grid grid-cols-[28px_1fr] gap-1 items-baseline">
 									<span className="text-[12px] tracking-[0.04em] text-ink-mute num font-medium">{li.num}</span>

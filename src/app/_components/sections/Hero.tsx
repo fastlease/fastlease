@@ -2,7 +2,6 @@
 
 import { Reveal } from "../ui/Reveal";
 import { Button } from "../ui/Button";
-import { cn } from "~/lib/utils";
 
 const NUM_LEASED = 127;
 const AVG_DAYS = 16;
@@ -10,9 +9,9 @@ const PCT_ASKING = 99.4;
 const GUARANTEE_DAYS = 21;
 
 const HEADLINES = [
-	{ eyebrow: "Toronto Condo Leasing", h: "Your condo,\nleased in 21 days." },
+	{ eyebrow: "Toronto Condo Leasing", h: "Leased by day 21,\nor 21% off the fee." },
 	{ eyebrow: "A leasing system, not a service", h: "A date, not\na best effort." },
-	{ eyebrow: "Toronto Condo Leasing", h: "Leased by day 21,\nor you don't pay." },
+	{ eyebrow: "Toronto Condo Leasing", h: "21 days.\nOr 21% off." },
 ];
 
 interface HeroProps {
@@ -41,14 +40,14 @@ export function Hero({ headlineIdx = 0, onOpenForm }: HeroProps) {
 				</Reveal>
 
 				<Reveal as="p" className="text-[clamp(18px,1.5vw,22px)] text-ink-soft max-w-[56ch] mb-10 leading-[1.45]">
-					A modern leasing system for Toronto condo owners. If we don&apos;t sign a qualified tenant in {GUARANTEE_DAYS} days, you don&apos;t pay until we do.
+					A modern leasing system for Toronto condo owners. If we don&apos;t sign a qualified tenant in {GUARANTEE_DAYS} days, our fee drops {GUARANTEE_DAYS}% — automatically, in writing, no escalation either way.
 				</Reveal>
 
 				<Reveal className="flex gap-6 items-center mb-8 max-sm:flex-col max-sm:items-stretch max-sm:gap-4">
 					<Button onClick={onOpenForm} showArrow>
 						Get Your Leasing Timeline
 					</Button>
-					<a href="#how" className="inline-flex items-center gap-1.5 text-ink border-b border-ink-faint pb-[2px] text-[15px] hover:border-ink transition-all max-sm:hidden">
+					<a href="#how" className="inline-flex items-center gap-1.5 text-ink border-b border-ink-faint pb-[2px] text-[15px] hover:border-ink transition-all max-sm:self-start">
 						See how it works <span>→</span>
 					</a>
 				</Reveal>
@@ -59,6 +58,8 @@ export function Hero({ headlineIdx = 0, onOpenForm }: HeroProps) {
 					Average: <span className="num text-ink font-medium">{AVG_DAYS} days</span>
 					<span className="text-ink-faint mx-1">·</span>
 					<span className="num text-ink font-medium">{PCT_ASKING}%</span> of asking
+					<span className="text-ink-faint mx-1">·</span>
+					Featured on <span className="text-ink font-medium">property.ca</span> + <span className="text-ink font-medium">condos.ca</span>
 				</Reveal>
 			</div>
 		</section>

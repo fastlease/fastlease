@@ -26,7 +26,7 @@ export function RecentLeases({ layout = "cards" }: { layout?: "cards" | "table" 
 					<span className="text-[11px] font-medium tracking-[0.14em] text-ink-mute uppercase">Recent leases</span>
 				</Reveal>
 
-				<div className="grid grid-cols-2 md:grid-cols-1 gap-12 items-end mb-12 sm:gap-4">
+				<div className="grid grid-cols-2 max-md:grid-cols-1 gap-12 items-end mb-12 max-md:gap-4">
 					<Reveal as="h2" className="max-w-[22ch]">Nine recent leases. No names, no photos. Just data.</Reveal>
 					<Reveal as="p" className="text-[17px] text-ink-soft max-w-[48ch] leading-[1.55]">
 						Anonymized at the unit level, accurate at the deal level. The pattern is the
@@ -35,7 +35,7 @@ export function RecentLeases({ layout = "cards" }: { layout?: "cards" | "table" 
 				</div>
 
 				{layout === "cards" ? (
-					<div className="grid grid-cols-3 lg:grid-cols-2 sm:grid-cols-1 gap-4">
+					<div className="grid grid-cols-3 max-lg:grid-cols-2 max-md:grid-cols-1 gap-4">
 						{LEASES.map((l, i) => {
 							const delta = l.leased - l.listed;
 							return (
@@ -69,16 +69,16 @@ export function RecentLeases({ layout = "cards" }: { layout?: "cards" | "table" 
 						})}
 					</div>
 				) : (
-					<Reveal className="p-2 sm:p-5 bg-[color-mix(in_oklab,var(--bg,#fff),white_35%)] border border-hair rounded-[14px] overflow-x-auto">
+					<Reveal className="p-5 max-md:p-2 bg-[color-mix(in_oklab,var(--bg,#fff),white_35%)] border border-hair rounded-[14px] overflow-x-auto">
 						<table className="w-full border-collapse">
 							<thead>
 								<tr>
-									<th className="text-left p-4 sm:p-3 text-[11px] uppercase tracking-[0.12em] text-ink-mute font-medium">Neighborhood</th>
-									<th className="text-left p-4 sm:p-3 text-[11px] uppercase tracking-[0.12em] text-ink-mute font-medium">Unit</th>
-									<th className="text-left p-4 sm:p-3 text-[11px] uppercase tracking-[0.12em] text-ink-mute font-medium">Listed</th>
-									<th className="text-left p-4 sm:p-3 text-[11px] uppercase tracking-[0.12em] text-ink-mute font-medium">Leased</th>
-									<th className="text-left p-4 sm:p-3 text-[11px] uppercase tracking-[0.12em] text-ink-mute font-medium">Δ</th>
-									<th className="text-left p-4 sm:p-3 text-[11px] uppercase tracking-[0.12em] text-ink-mute font-medium">Days</th>
+									<th className="text-left p-4 max-md:p-3 text-[11px] uppercase tracking-[0.12em] text-ink-mute font-medium">Neighborhood</th>
+									<th className="text-left p-4 max-md:p-3 text-[11px] uppercase tracking-[0.12em] text-ink-mute font-medium">Unit</th>
+									<th className="text-left p-4 max-md:p-3 text-[11px] uppercase tracking-[0.12em] text-ink-mute font-medium">Listed</th>
+									<th className="text-left p-4 max-md:p-3 text-[11px] uppercase tracking-[0.12em] text-ink-mute font-medium">Leased</th>
+									<th className="text-left p-4 max-md:p-3 text-[11px] uppercase tracking-[0.12em] text-ink-mute font-medium">Δ</th>
+									<th className="text-left p-4 max-md:p-3 text-[11px] uppercase tracking-[0.12em] text-ink-mute font-medium">Days</th>
 								</tr>
 							</thead>
 							<tbody>
@@ -86,14 +86,14 @@ export function RecentLeases({ layout = "cards" }: { layout?: "cards" | "table" 
 									const delta = l.leased - l.listed;
 									return (
 										<tr key={i} className="border-t border-hair hover:bg-[color-mix(in_oklab,var(--bg),var(--accent)_4%)] transition-colors">
-											<td className="p-4 sm:p-3 text-[15px]">{l.n}</td>
-											<td className="p-4 sm:p-3 text-[15px]">{l.u}</td>
-											<td className="p-4 sm:p-3 text-[15px] num">${l.listed.toLocaleString()}</td>
-											<td className="p-4 sm:p-3 text-[15px] num">${l.leased.toLocaleString()}</td>
-											<td className={cn("p-4 sm:p-3 text-[15px] num", delta >= 0 ? "text-accent" : "text-ink")}>
+											<td className="p-4 max-md:p-3 text-[15px]">{l.n}</td>
+											<td className="p-4 max-md:p-3 text-[15px]">{l.u}</td>
+											<td className="p-4 max-md:p-3 text-[15px] num">${l.listed.toLocaleString()}</td>
+											<td className="p-4 max-md:p-3 text-[15px] num">${l.leased.toLocaleString()}</td>
+											<td className={cn("p-4 max-md:p-3 text-[15px] num", delta >= 0 ? "text-accent" : "text-ink")}>
 												{delta >= 0 ? "+" : "−"}${Math.abs(delta)}
 											</td>
-											<td className="p-4 sm:p-3 text-[15px] num">{l.days}</td>
+											<td className="p-4 max-md:p-3 text-[15px] num">{l.days}</td>
 										</tr>
 									);
 								})}

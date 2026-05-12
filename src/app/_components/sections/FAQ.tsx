@@ -42,7 +42,7 @@ export function FAQ() {
 					{FAQS.map((f, i) => (
 						<Reveal key={i} className="border-b border-hair">
 							<button 
-								className="w-full text-left grid grid-cols-[60px_1fr_32px] sm:grid-cols-[40px_1fr_24px] items-baseline gap-4 py-5.5 outline-none group"
+								className="w-full text-left grid grid-cols-[60px_1fr_32px] max-md:grid-cols-[40px_1fr_24px] items-baseline gap-4 py-5.5 outline-none group"
 								onClick={() => setOpen(open === i ? null : i)}
 							>
 								<span className="text-[12px] tracking-[0.04em] text-ink-mute num">{String(i + 1).padStart(2, "0")}</span>
@@ -60,7 +60,7 @@ export function FAQ() {
 										transition={{ duration: 0.3, ease: [0.2, 0.8, 0.2, 1] }}
 										className="overflow-hidden"
 									>
-										<div className="grid grid-cols-[60px_1fr_32px] sm:grid-cols-[40px_1fr_24px] gap-4 pb-6">
+										<div className="grid grid-cols-[60px_1fr_32px] max-md:grid-cols-[40px_1fr_24px] gap-4 pb-6">
 											<div />
 											<div className="text-[16px] text-ink-soft leading-[1.55] max-w-[80ch]">
 												{f.a}

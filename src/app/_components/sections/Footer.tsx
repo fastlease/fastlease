@@ -3,12 +3,12 @@ import { Wordmark } from "../ui/Logos";
 export function Footer({ logoVariant = "timestamp" }: { logoVariant?: "timestamp" | "counter" | "abstract" }) {
 	return (
 		<footer className="py-20 pb-10 border-t border-hair bg-[color-mix(in_oklab,var(--bg),var(--ink)_2%)]">
-			<div className="wrap grid grid-cols-[1.2fr_2fr] md:grid-cols-1 gap-14 md:gap-8">
+			<div className="wrap grid grid-cols-[1.2fr_2fr] max-md:grid-cols-1 gap-14 max-md:gap-8">
 				<div>
 					<Wordmark variant={logoVariant} />
 					<p className="text-[14px] text-ink-soft mt-3.5 max-w-[30ch]">A 21-day leasing system for Toronto condo owners.</p>
 				</div>
-				<div className="grid grid-cols-3 sm:grid-cols-2 gap-6">
+				<div className="grid grid-cols-3 max-sm:grid-cols-2 gap-6">
 					<div>
 						<div className="text-[11px] font-medium tracking-[0.12em] text-ink-mute uppercase mb-3.5">The page</div>
 						<a href="#how" className="block text-[14px] text-ink-soft mb-2 hover:text-ink transition-colors">How It Works</a>
@@ -31,7 +31,7 @@ export function Footer({ logoVariant = "timestamp" }: { logoVariant?: "timestamp
 			</div>
 			<div className="wrap mt-14">
 				<hr className="border-t border-hair" />
-				<div className="flex justify-between pt-6 text-[12px] text-ink-mute md:flex-col md:gap-1.5">
+				<div className="flex justify-between pt-6 text-[12px] text-ink-mute max-md:flex-col max-md:gap-1.5">
 					<span>© 2026 FastLease Operations Inc.</span>
 					<span>Brokerage licensed in Ontario.</span>
 				</div>

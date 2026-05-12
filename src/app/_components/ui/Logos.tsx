@@ -56,11 +56,13 @@ export const Wordmark: FC<WordmarkProps> = ({
 	return (
 		<span className={cn("inline-flex items-center gap-[10px]", className)}>
 			{variant !== "wordmark" && <LogoMark variant={variant as any} size={20}/>}
-			<span className={cn(
-				"font-semibold text-[17px] tracking-[-0.018em]",
-				mono ? "text-inherit" : "text-ink"
-			)}>
-				FastLease<span className="text-ink-faint font-medium">.ca</span>
+			<span style={{
+				fontWeight: 600,
+				fontSize: 17,
+				letterSpacing: '-0.018em',
+				color: mono ? 'inherit' : 'var(--color-ink)'
+			}}>
+				FastLease<span style={{ color: 'var(--color-ink-faint)', fontWeight: 500 }}>.ca</span>
 			</span>
 		</span>
 	);

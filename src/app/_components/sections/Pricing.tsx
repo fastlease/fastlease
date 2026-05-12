@@ -19,8 +19,8 @@ export function Pricing({ onOpenForm }: PricingProps) {
 
 				<Reveal as="h2" className="max-w-[26ch] mb-12">No estimates. No asterisks. Visible from the homepage.</Reveal>
 
-				<div className="grid grid-cols-2 sm:grid-cols-1 gap-5">
-					<Reveal className="p-9 sm:p-7 flex flex-col gap-3.5 bg-[color-mix(in_oklab,var(--bg,#fff),white_35%)] border border-hair rounded-[14px]">
+				<div className="grid grid-cols-2 max-md:grid-cols-1 gap-5">
+					<Reveal className="p-9 max-md:p-7 flex flex-col gap-3.5 bg-[color-mix(in_oklab,var(--bg,#fff),white_35%)] border border-hair rounded-[14px]">
 						<div className="text-[11px] font-medium tracking-[0.12em] text-ink-mute uppercase">Flat fee · all-in</div>
 						<div className="my-1.5 mb-2">
 							<span className="text-[clamp(28px,3vw,38px)] font-medium tracking-[-0.025em] num">One month&apos;s rent</span>
@@ -35,7 +35,7 @@ export function Pricing({ onOpenForm }: PricingProps) {
 						</ul>
 					</Reveal>
 
-					<Reveal className="p-9 sm:p-7 flex flex-col gap-3.5 bg-[color-mix(in_oklab,var(--accent),var(--bg,#FAF8F3)_90%)] border border-[color-mix(in_oklab,var(--accent),transparent_70%)] rounded-[14px]">
+					<Reveal className="p-9 max-md:p-7 flex flex-col gap-3.5 bg-[color-mix(in_oklab,var(--accent),var(--bg,#FAF8F3)_90%)] border border-[color-mix(in_oklab,var(--accent),transparent_70%)] rounded-[14px]">
 						<div className="text-[11px] font-medium tracking-[0.12em] text-accent uppercase">The 21-day guarantee</div>
 						<div className="my-1.5 mb-2">
 							<span className="text-[clamp(28px,3vw,38px)] font-medium tracking-[-0.025em] num">Day 22 → you don&apos;t pay.</span>
@@ -56,7 +56,7 @@ export function Pricing({ onOpenForm }: PricingProps) {
 					</Reveal>
 				</div>
 
-				<Reveal className="mt-9 flex items-center gap-6 flex-wrap sm:gap-4">
+				<Reveal className="mt-9 flex items-center gap-6 flex-wrap max-sm:gap-4">
 					<Button onClick={onOpenForm} showArrow>
 						Get Your Leasing Timeline
 					</Button>

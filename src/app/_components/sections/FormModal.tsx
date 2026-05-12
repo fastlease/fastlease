@@ -94,14 +94,14 @@ export function FormModal({ open, onClose, mode }: FormModalProps) {
 					)} 
 					onClick={(e) => e.stopPropagation()}
 				>
-					<div className="flex justify-between items-baseline pt-[26px] px-7 sm:px-[22px] pb-1.5">
+					<div className="flex justify-between items-baseline pt-[26px] px-7 max-sm:px-[22px] pb-1.5">
 						<div>
 							<div className="text-[11px] uppercase tracking-[0.14em] text-ink-mute">15-minute call</div>
 							<h3 className="text-[26px] font-medium tracking-[-0.02em] mt-2">Pick a window that works.</h3>
 						</div>
 						<button className="appearance-none cursor-default text-[22px] text-ink-mute w-8 h-8 grid place-items-center rounded-lg hover:bg-hair hover:text-ink outline-none" onClick={onClose} aria-label="Close">×</button>
 					</div>
-					<div className="px-7 sm:px-[22px] pt-2 pb-7 overflow-y-auto">
+					<div className="px-7 max-sm:px-[22px] pt-2 pb-7 overflow-y-auto">
 						<p className="text-[15px] text-ink-soft max-w-[50ch] mb-6">
 							We&apos;ll send a short calendar invite. No deck, no pitch — fifteen minutes on what you&apos;d want from us, and whether we can deliver it for your unit.
 						</p>
@@ -124,7 +124,7 @@ export function FormModal({ open, onClose, mode }: FormModalProps) {
 							</select>
 						</div>
 					</div>
-					<div className="flex justify-between items-center py-[18px] px-7 sm:px-[22px] border-t border-hair bg-[color-mix(in_oklab,var(--bg,#FAF8F3),var(--color-ink)_2%)]">
+					<div className="flex justify-between items-center py-[18px] px-7 max-sm:px-[22px] border-t border-hair bg-[color-mix(in_oklab,var(--bg,#FAF8F3),var(--color-ink)_2%)]">
 						<span className="text-[14px] text-ink-mute">We respond within one business day.</span>
 						<Button onClick={onClose} className="h-11 px-[18px] text-[14px]" showArrow>
 							Send request
@@ -150,14 +150,14 @@ export function FormModal({ open, onClose, mode }: FormModalProps) {
 				)} 
 				onClick={(e) => e.stopPropagation()}
 			>
-				<div className="flex justify-between items-baseline pt-[26px] px-7 sm:px-[22px] pb-1.5">
+				<div className="flex justify-between items-baseline pt-[26px] px-7 max-sm:px-[22px] pb-1.5">
 					<div>
 						<div className="text-[11px] uppercase tracking-[0.14em] text-ink-mute">Leasing timeline · 60 seconds</div>
 					</div>
 					<button className="appearance-none cursor-default text-[22px] text-ink-mute w-8 h-8 grid place-items-center rounded-lg hover:bg-hair hover:text-ink outline-none" onClick={onClose} aria-label="Close">×</button>
 				</div>
 				
-				<div className="flex gap-1.5 px-7 sm:px-[22px] pb-[18px] mt-2">
+				<div className="flex gap-1.5 px-7 max-sm:px-[22px] pb-[18px] mt-2">
 					{Array.from({ length: STEPS }, (_, i) => (
 						<div 
 							key={i} 
@@ -171,7 +171,7 @@ export function FormModal({ open, onClose, mode }: FormModalProps) {
 				</div>
 
 				{step === 0 && (
-					<div className="px-7 sm:px-[22px] pt-2 pb-7 overflow-y-auto">
+					<div className="px-7 max-sm:px-[22px] pt-2 pb-7 overflow-y-auto">
 						<h3 className="text-[26px] font-medium tracking-[-0.02em] max-w-[22ch] mb-1.5">Where&apos;s the unit?</h3>
 						<p className="text-[15px] text-ink-soft max-w-[50ch] mb-6">We use building-level comparables, so the neighborhood matters more than the street address.</p>
 						<div className="flex flex-col gap-2 mb-[18px]">
@@ -188,12 +188,12 @@ export function FormModal({ open, onClose, mode }: FormModalProps) {
 				)}
 
 				{step === 1 && (
-					<div className="px-7 sm:px-[22px] pt-2 pb-7 overflow-y-auto">
+					<div className="px-7 max-sm:px-[22px] pt-2 pb-7 overflow-y-auto">
 						<h3 className="text-[26px] font-medium tracking-[-0.02em] max-w-[22ch] mb-1.5">What kind of unit?</h3>
 						<p className="text-[15px] text-ink-soft max-w-[50ch] mb-6">Bedroom count determines time-to-lease more than any other input.</p>
 						<div className="flex flex-col gap-2 mb-[18px]">
 							<label className="text-[12px] uppercase tracking-[0.12em] text-ink-mute font-medium">Bedrooms</label>
-							<div className="grid grid-cols-3 sm:grid-cols-2 gap-2">
+							<div className="grid grid-cols-3 max-sm:grid-cols-2 gap-2">
 								{["Jr 1BR","1BR","1BR+den","2BR","2BR+den","3BR"].map((b) => (
 									<button 
 										key={b} 
@@ -216,12 +216,12 @@ export function FormModal({ open, onClose, mode }: FormModalProps) {
 				)}
 
 				{step === 2 && (
-					<div className="px-7 sm:px-[22px] pt-2 pb-7 overflow-y-auto">
+					<div className="px-7 max-sm:px-[22px] pt-2 pb-7 overflow-y-auto">
 						<h3 className="text-[26px] font-medium tracking-[-0.02em] max-w-[22ch] mb-1.5">When does it need to be leased by?</h3>
 						<p className="text-[15px] text-ink-soft max-w-[50ch] mb-6">Optional. We&apos;ll always work to twenty-one days — this just helps us flag anything tighter than that.</p>
 						<div className="flex flex-col gap-2 mb-[18px]">
 							<label className="text-[12px] uppercase tracking-[0.12em] text-ink-mute font-medium">Move-in window</label>
-							<div className="grid grid-cols-3 sm:grid-cols-2 gap-2">
+							<div className="grid grid-cols-3 max-sm:grid-cols-2 gap-2">
 								{[{k:"urgent",l:"< 30 days"},{k:"soon",l:"30–60 days"},{k:"flexible",l:"Flexible"}].map((o) => (
 									<button 
 										key={o.k} 
@@ -244,7 +244,7 @@ export function FormModal({ open, onClose, mode }: FormModalProps) {
 				)}
 
 				{step === 3 && (
-					<div className="px-7 sm:px-[22px] pt-2 pb-7">
+					<div className="px-7 max-sm:px-[22px] pt-2 pb-7">
 						<div className="text-[11px] uppercase tracking-[0.14em] text-ink-mute mb-2">Your estimated timeline</div>
 						<h3 className="text-[26px] font-medium tracking-[-0.02em] mb-1">
 							{data.bedrooms} in {data.neighborhood}
@@ -296,7 +296,7 @@ export function FormModal({ open, onClose, mode }: FormModalProps) {
 				)}
 
 				{step < 3 && (
-					<div className="flex justify-between items-center py-[18px] px-7 sm:px-[22px] border-t border-hair bg-[color-mix(in_oklab,var(--bg,#FAF8F3),var(--color-ink)_2%)] mt-auto">
+					<div className="flex justify-between items-center py-[18px] px-7 max-sm:px-[22px] border-t border-hair bg-[color-mix(in_oklab,var(--bg,#FAF8F3),var(--color-ink)_2%)] mt-auto">
 						<button 
 							className="appearance-none cursor-default text-[14px] text-ink-mute hover:text-ink disabled:opacity-30 disabled:hover:text-ink-mute transition-opacity" 
 							onClick={() => setStep(Math.max(0, step - 1))} 

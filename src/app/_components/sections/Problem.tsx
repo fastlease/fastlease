@@ -1,15 +1,29 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { Reveal } from "../ui/Reveal";
 import { cn } from "~/lib/utils";
+import { dailyRent, estimate as runEstimate, TORONTO_AVG_DAYS } from "~/lib/estimator";
 
-const DAILY_RENT = 107;
-const PRESETS = [14, 31, 60, 90];
+const PRESETS = [21, 45, 90];
 
-export function Problem() {
-	const [days, setDays] = useState(31);
-	const lost = days * DAILY_RENT;
+interface ProblemProps {
+	ctx?: { neighborhood: string; bedrooms: string };
+}
+
+export function Problem({ ctx }: ProblemProps) {
+	const neighborhood = ctx?.neighborhood ?? "King West";
+	const bedrooms = ctx?.bedrooms ?? "1BR";
+	const [days, setDays] = useState(45);
+
+	const perDay = useMemo(() => dailyRent(neighborhood, bedrooms), [neighborhood, bedrooms]);
+	const fastleaseDays = useMemo(
+		() => runEstimate({ neighborhood, bedrooms }).days,
+		[neighborhood, bedrooms],
+	);
+	const lost = days * perDay;
+	const savedDays = Math.max(0, TORONTO_AVG_DAYS - fastleaseDays);
+	const saved = savedDays * perDay;
 
 	return (
 		<section className="section-pad bg-[color-mix(in_oklab,var(--bg),var(--ink)_3%)]">
@@ -23,12 +37,12 @@ export function Problem() {
 				<div className="grid grid-cols-[1.1fr_1fr] max-lg:grid-cols-1 gap-14 max-lg:gap-10 items-start">
 					<div>
 						<Reveal as="h2" className="max-w-[22ch] mb-8">
-							Every vacant day costs you <span className="text-accent num">${DAILY_RENT}</span>.
+							Every vacant day costs you <span className="text-accent num">${perDay}</span>.
 						</Reveal>
 						<Reveal as="p" className="text-[17px] text-ink-soft leading-[1.55] max-w-[48ch] mb-5">
-							The number above is the daily rent on a typical King West one-bedroom. Vacancy
-							is rarely dramatic. It&apos;s a slow leak — three weeks here, six there — that most
-							landlords don&apos;t sit down and total at the end of the year.
+							That&apos;s the daily rent on a {bedrooms} in {neighborhood}. Vacancy is rarely
+							dramatic — it&apos;s a slow leak, three weeks here, six there, that most landlords
+							don&apos;t sit down and total at the end of the year.
 						</Reveal>
 						<Reveal as="p" className="text-[17px] text-ink-soft leading-[1.55] max-w-[48ch]">
 							That&apos;s why FastLease is built around a date instead of a best effort. We don&apos;t
@@ -47,7 +61,7 @@ export function Problem() {
 							</div>
 							<div className="grid grid-cols-[1fr_auto] items-baseline border-t border-hair pt-4 mt-4">
 								<span className="text-[14px] text-ink-soft">× Daily rent</span>
-								<span className="text-[22px] font-medium tracking-[-0.02em] num text-ink-mute leading-none">${DAILY_RENT}</span>
+								<span className="text-[22px] font-medium tracking-[-0.02em] num text-ink-mute leading-none">${perDay}</span>
 							</div>
 							<div className="grid grid-cols-[1fr_auto] items-baseline border-t border-double border-ink/30 pt-5 mt-4">
 								<span className="text-[14px] text-ink-soft">Lost rent</span>
@@ -76,6 +90,20 @@ export function Problem() {
 									))}
 								</div>
 							</div>
+
+							{savedDays > 0 && (
+								<div className="mt-7 pt-5 border-t border-hair">
+									<div className="text-[11px] tracking-[0.12em] uppercase text-accent font-medium mb-2">
+										What FastLease saves
+									</div>
+									<p className="text-[14px] text-ink-soft leading-[1.55]">
+										Toronto average is <span className="num text-ink">{TORONTO_AVG_DAYS}</span> days. Your
+										FastLease estimate finishes at <span className="num text-ink">{fastleaseDays}</span> —
+										that&apos;s <span className="num text-ink">{savedDays}</span> days saved,
+										or <span className="num text-accent">${saved.toLocaleString()}</span> not bled.
+									</p>
+								</div>
+							)}
 						</div>
 					</Reveal>
 				</div>

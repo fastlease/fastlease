@@ -73,3 +73,69 @@ model VerificationToken {
 
     @@unique([identifier, token])
 }
+
+// Funnel surface: every estimate request and call booking lands here.
+// One row per submission. Estimate snapshot stored so future analytics can
+// reconcile what the model said vs. what actually leased.
+model Lead {
+    id            String   @id @default(cuid())
+    createdAt     DateTime @default(now())
+    updatedAt     DateTime @updatedAt
+
+    kind          LeadKind @default(ESTIMATE)
+    source        String?  // "form" | "rent-widget" | "exit-intent" | "tenants" | "neighborhood:king-west" | ...
+
+    // Contact
+    email         String
+    name          String?
+    phone         String?
+
+    // Unit
+    neighborhood  String
+    bedrooms      String
+    targetRent    Int?
+    address       String?
+    moveWindow    String?  // "urgent" | "soon" | "flexible"
+
+    // Snapshot of the estimate the user saw at submission time
+    estDays       Int?
+    estRentLow    Int?
+    estRentHigh   Int?
+    estListDate   String?
+    estLeaseBy    String?
+
+    // Call-specific
+    timeWindow    String?
+
+    // Attribution
+    referralCode  String?
+    referrer      Referral? @relation(fields: [referralCode], references: [code])
+    utmSource     String?
+    utmMedium     String?
+    utmCampaign   String?
+    landingPath   String?
+
+    @@index([createdAt])
+    @@index([email])
+    @@index([neighborhood])
+}
+
+enum LeadKind {
+    ESTIMATE
+    CALL
+    TENANT_SHORTLIST
+}
+
+// Referral codes: $200 off the fee for the landlord who sent the lead.
+// One row per landlord; uses count + lastUsedAt to track viral reach.
+model Referral {
+    code        String   @id
+    ownerEmail  String
+    ownerName   String?
+    createdAt   DateTime @default(now())
+    lastUsedAt  DateTime?
+    uses        Int      @default(0)
+    leads       Lead[]
+
+    @@index([ownerEmail])
+}

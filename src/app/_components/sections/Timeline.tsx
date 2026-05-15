@@ -23,7 +23,7 @@ const TODAY = 13;
 
 export function TimelineSection({ treatment = "calendar" }: { treatment?: "calendar" | "beam" | "gantt" }) {
 	return (
-		<section id="timeline" className="section-pad pt-[clamp(60px,7vw,100px)]">
+		<section id="timeline" className="section-pad">
 			<div className="wrap">
 				<Reveal className="flex items-center gap-4 mb-7">
 					<span className="num text-[12px] tracking-[0.14em] text-ink-mute uppercase">01</span>

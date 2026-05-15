@@ -17,7 +17,7 @@ export function Pricing({ onOpenForm }: PricingProps) {
 					<span className="text-[11px] font-medium tracking-[0.14em] text-ink-mute uppercase">Pricing & guarantee terms</span>
 				</Reveal>
 
-				<Reveal as="h2" className="max-w-[26ch] mb-12">No estimates. No asterisks. Visible from the homepage.</Reveal>
+				<Reveal as="h2" className="max-w-[28ch] mb-12">No estimates. No asterisks. Two numbers, posted up front.</Reveal>
 
 				<div className="grid grid-cols-2 max-md:grid-cols-1 gap-5">
 					<Reveal className="p-9 max-md:p-7 flex flex-col gap-3.5 bg-[color-mix(in_oklab,var(--bg,#fff),white_35%)] border border-hair rounded-[14px]">
@@ -58,7 +58,7 @@ export function Pricing({ onOpenForm }: PricingProps) {
 
 				<Reveal className="mt-9 flex items-center gap-6 flex-wrap max-sm:gap-4">
 					<Button onClick={onOpenForm} showArrow>
-						Get Your Leasing Timeline
+						Get my 21-day plan
 					</Button>
 					<span className="text-[14px] text-ink-mute max-w-[44ch]">A 60-second form returns an estimated days-to-lease, suggested rent, and recommended listing date.</span>
 				</Reveal>

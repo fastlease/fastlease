@@ -24,7 +24,7 @@ export function FinalCTA({ onOpenForm, onOpenCall }: FinalCTAProps) {
 				</Reveal>
 				<Reveal className="flex gap-4 flex-wrap justify-center">
 					<Button onClick={onOpenForm} showArrow>
-						Get Your Leasing Timeline
+						Get my 21-day plan
 					</Button>
 					<Button variant="ghost" onClick={onOpenCall}>
 						Book a 15-minute call

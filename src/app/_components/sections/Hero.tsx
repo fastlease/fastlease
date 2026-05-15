@@ -45,7 +45,7 @@ export function Hero({ headlineIdx = 0, onOpenForm }: HeroProps) {
 
 				<Reveal className="flex gap-6 items-center mb-8 max-sm:flex-col max-sm:items-stretch max-sm:gap-4">
 					<Button onClick={onOpenForm} showArrow>
-						Get Your Leasing Timeline
+						Get my 21-day plan
 					</Button>
 					<a href="#how" className="inline-flex items-center gap-1.5 text-ink border-b border-ink-faint pb-[2px] text-[15px] hover:border-ink transition-all max-sm:self-start">
 						See how it works <span>→</span>

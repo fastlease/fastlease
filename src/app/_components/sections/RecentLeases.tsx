@@ -3,20 +3,31 @@
 import { Reveal } from "../ui/Reveal";
 import { CountUp } from "../ui/CountUp";
 import { cn } from "~/lib/utils";
+import { LEASES, leaseStats } from "~/lib/leases";
 
-const LEASES = [
-	{ n: "King West", u: "1BR", listed: 2650, leased: 2675, days: 14, signed: "Apr 2026" },
-	{ n: "Liberty Village", u: "2BR+den", listed: 3450, leased: 3400, days: 19, signed: "Apr 2026" },
-	{ n: "CityPlace", u: "Jr 1BR", listed: 2200, leased: 2200, days: 11, signed: "Mar 2026" },
-	{ n: "St. Lawrence", u: "1BR+den", listed: 2850, leased: 2900, days: 17, signed: "Mar 2026" },
-	{ n: "Yonge & Eg", u: "2BR", listed: 3250, leased: 3200, days: 21, signed: "Mar 2026" },
-	{ n: "The Annex", u: "1BR", listed: 2400, leased: 2400, days: 9, signed: "Feb 2026" },
-	{ n: "Distillery", u: "1BR", listed: 2700, leased: 2675, days: 13, signed: "Feb 2026" },
-	{ n: "Fort York", u: "2BR", listed: 3100, leased: 3150, days: 16, signed: "Feb 2026" },
-	{ n: "Leslieville", u: "2BR+den", listed: 3550, leased: 3500, days: 20, signed: "Jan 2026" },
+const COUNT_WORDS = [
+	"Zero",
+	"One",
+	"Two",
+	"Three",
+	"Four",
+	"Five",
+	"Six",
+	"Seven",
+	"Eight",
+	"Nine",
+	"Ten",
+	"Eleven",
+	"Twelve",
 ];
 
+function countWord(n: number): string {
+	return COUNT_WORDS[n] ?? String(n);
+}
+
 export function RecentLeases({ layout = "cards" }: { layout?: "cards" | "table" }) {
+	const stats = leaseStats();
+
 	return (
 		<section id="leases" className="section-pad">
 			<div className="wrap">
@@ -27,7 +38,9 @@ export function RecentLeases({ layout = "cards" }: { layout?: "cards" | "table" 
 				</Reveal>
 
 				<div className="grid grid-cols-2 max-md:grid-cols-1 gap-12 items-end mb-12 max-md:gap-4">
-					<Reveal as="h2" className="max-w-[22ch]">Nine recent leases. No names, no photos. Just data.</Reveal>
+					<Reveal as="h2" className="max-w-[22ch]">
+						{countWord(stats.count)} recent leases. No names, no photos. Just data.
+					</Reveal>
 					<Reveal as="p" className="text-[17px] text-ink-soft max-w-[48ch] leading-[1.55]">
 						Anonymized at the unit level, accurate at the deal level. The pattern is the
 						proof — not any single line.
@@ -108,11 +121,31 @@ export function RecentLeases({ layout = "cards" }: { layout?: "cards" | "table" 
 					</Reveal>
 				)}
 
-				<Reveal className="mt-9 flex gap-3.5 items-baseline">
-					<span className="text-[36px] font-medium tracking-[-0.025em] text-accent leading-none">
-						<CountUp to={99.4} decimals={1} suffix="%" />
-					</span>
-					<span className="text-[17px] text-ink-soft max-w-[32ch]">of asking rent achieved across closed 2025 leases.</span>
+				<Reveal className="mt-9 grid grid-cols-3 max-md:grid-cols-1 gap-7 pt-7 border-t border-hair">
+					<div>
+						<div className="text-[clamp(32px,3.6vw,44px)] font-medium tracking-[-0.025em] text-accent leading-none num">
+							<CountUp to={stats.pctOfAsking} decimals={1} suffix="%" />
+						</div>
+						<div className="text-[14px] text-ink-soft max-w-[28ch] mt-2 leading-[1.45]">
+							of asking rent achieved across these leases.
+						</div>
+					</div>
+					<div>
+						<div className="text-[clamp(32px,3.6vw,44px)] font-medium tracking-[-0.025em] leading-none num">
+							{stats.withinOnePct}/{stats.count}
+						</div>
+						<div className="text-[14px] text-ink-soft max-w-[28ch] mt-2 leading-[1.45]">
+							signed within 1% of the listed price.
+						</div>
+					</div>
+					<div>
+						<div className="text-[clamp(32px,3.6vw,44px)] font-medium tracking-[-0.025em] leading-none num">
+							{stats.medianDays}
+						</div>
+						<div className="text-[14px] text-ink-soft max-w-[28ch] mt-2 leading-[1.45]">
+							median days from list to signed lease.
+						</div>
+					</div>
 				</Reveal>
 			</div>
 		</section>

@@ -45,7 +45,7 @@ export function Nav({ onOpenForm, logoVariant = "timestamp" }: NavProps) {
 					showArrow 
 					onClick={onOpenForm}
 				>
-					Get Your Timeline
+					Get my plan
 				</Button>
 			</div>
 		</header>

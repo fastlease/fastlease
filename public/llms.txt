@@ -1,0 +1,40 @@
+# FastLease
+
+> 21-day Toronto condo leasing operated by Property.ca Inc. Brokerage. If a qualified tenant isn't signed by day 21, the brokerage fee drops 21% — automatically, in writing.
+
+FastLease.ca is the leasing arm of Property.ca Inc. Brokerage, the firm that owns property.ca and condos.ca (combined audience of over one million monthly registered Toronto-area users). Listings appear on both portals from day one and syndicate to MLS, Realtor.ca, Zumper, Kijiji, and nine other platforms.
+
+## How the 21-day guarantee works
+
+- **Standard fee:** One month's rent, payable on signed lease, if signed by day 21.
+- **Discounted fee:** 79% of one month's rent if signed on day 22 or later (21% reduction, automatic).
+- **No escalation:** No late-listing surcharge, no walk-away charge, no listing or photography fees.
+- **Suspension clause:** The 21-day guarantee is suspended only if the owner lists more than 5% above FastLease's recommended price range, disclosed in writing before sign.
+
+## Tenant screening (five layers)
+
+1. Credit
+2. Income-to-rent ratio
+3. Employment verification
+4. Two prior-landlord references contacted by phone
+5. Document authentication
+
+Applicants who clear only four of the five are not accepted. Every application is presented to the owner with the screening summary before signing.
+
+## Service area
+
+Toronto core neighborhoods covered with local pricing data:
+King West, Liberty Village, CityPlace, St. Lawrence, Yonge & Eglinton, The Annex, Distillery, Fort York, Leslieville, plus the rest of the Greater Toronto Area priced against the closest comparable cluster.
+
+## Operator
+
+Sasha Bastani, Broker — Property.ca Inc. Brokerage.
+
+## Docs
+
+- [Homepage](https://fastlease.ca)
+- [How it works + FAQ](https://fastlease.ca/#faq)
+- [Pricing](https://fastlease.ca/pricing.md)
+- [Case studies](https://fastlease.ca/case-studies)
+- [Neighborhood pages](https://fastlease.ca/neighborhoods)
+- [Tenants — shortlist signup](https://fastlease.ca/tenants)

@@ -18,7 +18,7 @@ export const HOMEPAGE_FAQS: Faq[] = [
 	},
 	{
 		q: "How do you market the listing?",
-		a: "FastLease is operated through Property.ca Inc. Brokerage, the firm that owns property.ca and condos.ca. Your unit is featured on both from day one — a combined audience of over one million monthly registered users. From there it syndicates to MLS, Realtor.ca, Zumper, Kijiji, and nine other platforms. We do not pay for \"premium\" placements that do not measurably move time-to-lease.",
+		a: 'FastLease is operated through Property.ca Inc. Brokerage, the firm that owns property.ca and condos.ca. Your unit is featured on both from day one — a combined audience of over one million monthly registered users. From there it syndicates to MLS, Realtor.ca, Zumper, Kijiji, and nine other platforms. We do not pay for "premium" placements that do not measurably move time-to-lease.',
 	},
 	{
 		q: "What's your tenant screening process, exactly?",

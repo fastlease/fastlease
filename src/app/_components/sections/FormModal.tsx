@@ -1,15 +1,24 @@
 "use client";
 
-import { useState, useEffect, useMemo, useCallback } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { cn } from "~/lib/utils";
-import { Button } from "../ui/Button";
-import { NEIGHBORHOODS, BEDROOM_TYPES, comparables } from "~/lib/leases";
-import { estimate as runEstimate, vacancySavings, TORONTO_AVG_DAYS } from "~/lib/estimator";
-import { api } from "~/trpc/react";
-import { track, Events } from "~/lib/analytics";
-import { readAttribution } from "~/lib/referral";
+import { AnimatePresence, motion } from "framer-motion";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { env } from "~/env";
+import { Events, track, trackCTA } from "~/lib/analytics";
+import {
+	estimate as runEstimate,
+	TORONTO_AVG_DAYS,
+	vacancySavings,
+} from "~/lib/estimator";
+import {
+	EMAIL_GATE_VARIANTS,
+	Experiments,
+	useExperiment,
+} from "~/lib/experiment";
+import { BEDROOM_TYPES, comparables, NEIGHBORHOODS } from "~/lib/leases";
+import { readAttribution } from "~/lib/referral";
+import { cn } from "~/lib/utils";
+import { api } from "~/trpc/react";
+import { Button } from "../ui/Button";
 
 interface FormData {
 	address: string;
@@ -49,7 +58,13 @@ const slideVariants = {
 	exit: (dir: 1 | -1) => ({ x: dir * -40, opacity: 0 }),
 };
 
-export function FormModal({ open, onClose, mode, onBookCall, initialData }: FormModalProps) {
+export function FormModal({
+	open,
+	onClose,
+	mode,
+	onBookCall,
+	initialData,
+}: FormModalProps) {
 	const [internalMode, setInternalMode] = useState<"timeline" | "call">(mode);
 	const [step, setStep] = useState(0);
 	const [dir, setDir] = useState<1 | -1>(1);
@@ -57,6 +72,7 @@ export function FormModal({ open, onClose, mode, onBookCall, initialData }: Form
 	const [resumed, setResumed] = useState(false);
 	const [submitted, setSubmitted] = useState(false);
 	const [error, setError] = useState<string | null>(null);
+	const gateVariant = useExperiment(Experiments.emailGate, EMAIL_GATE_VARIANTS);
 
 	const submit = api.lead.submitEstimate.useMutation();
 
@@ -71,7 +87,10 @@ export function FormModal({ open, onClose, mode, onBookCall, initialData }: Form
 		let didResume = false;
 
 		try {
-			const saved = typeof window !== "undefined" ? localStorage.getItem(STORAGE_KEY) : null;
+			const saved =
+				typeof window !== "undefined"
+					? localStorage.getItem(STORAGE_KEY)
+					: null;
 			if (saved && !initialData) {
 				const parsed = JSON.parse(saved) as { data?: FormData; step?: number };
 				if (parsed.data && (parsed.step ?? 0) > 0) {
@@ -86,7 +105,9 @@ export function FormModal({ open, onClose, mode, onBookCall, initialData }: Form
 		setStep(startStep);
 		setDir(1);
 		setResumed(didResume);
-		track(Events.formStarted, { source: initialData ? "prefilled" : didResume ? "resumed" : "fresh" });
+		track(Events.formStarted, {
+			source: initialData ? "prefilled" : didResume ? "resumed" : "fresh",
+		});
 	}, [open, mode, initialData]);
 
 	useEffect(() => {
@@ -127,7 +148,12 @@ export function FormModal({ open, onClose, mode, onBookCall, initialData }: Form
 	}, [onClose]);
 
 	const estimate = useMemo(
-		() => runEstimate({ bedrooms: data.bedrooms, neighborhood: data.neighborhood, targetRent: data.targetRent }),
+		() =>
+			runEstimate({
+				bedrooms: data.bedrooms,
+				neighborhood: data.neighborhood,
+				targetRent: data.targetRent,
+			}),
 		[data.bedrooms, data.neighborhood, data.targetRent],
 	);
 
@@ -168,13 +194,17 @@ export function FormModal({ open, onClose, mode, onBookCall, initialData }: Form
 				attribution: readAttribution(),
 			});
 			setSubmitted(true);
-			track(Events.leadSubmitted, { source: "form", days: estimate.days });
+			track(Events.leadSubmitted, {
+				source: "form",
+				days: estimate.days,
+				gateVariant,
+			});
 			track(Events.estimateRevealed, { days: estimate.days });
 			advance();
 		} catch (e) {
 			setError(e instanceof Error ? e.message : "Something went wrong.");
 		}
-	}, [data, estimate, submit, advance]);
+	}, [data, estimate, submit, advance, gateVariant]);
 
 	useEffect(() => {
 		if (!open) return;
@@ -205,11 +235,11 @@ export function FormModal({ open, onClose, mode, onBookCall, initialData }: Form
 	if (internalMode === "call") {
 		return (
 			<CallMode
-				open={open}
-				onClose={finish}
 				data={data}
 				estimate={estimate}
 				onChange={set}
+				onClose={finish}
+				open={open}
 			/>
 		);
 	}
@@ -217,103 +247,120 @@ export function FormModal({ open, onClose, mode, onBookCall, initialData }: Form
 	return (
 		<div
 			className={cn(
-				"fixed inset-0 z-[80] bg-[color-mix(in_oklab,var(--color-ink),transparent_50%)] backdrop-blur-[4px] flex items-center justify-center p-6 opacity-0 pointer-events-none transition-opacity duration-200",
-				open && "opacity-100 pointer-events-auto",
+				"pointer-events-none fixed inset-0 z-[80] flex items-center justify-center bg-[color-mix(in_oklab,var(--color-ink),transparent_50%)] p-6 opacity-0 backdrop-blur-[4px] transition-opacity duration-200",
+				open && "pointer-events-auto opacity-100",
 			)}
 			onClick={handleClose}
+			onKeyDown={(e) => {
+				if (e.key === "Enter" || e.key === " ") handleClose();
+			}}
+			role="button"
+			tabIndex={-1}
 		>
 			<div
 				className={cn(
-					"bg-[var(--bg)] text-ink w-[min(680px,100%)] max-h-[calc(100vh-48px)] rounded-2xl border border-hair shadow-[0_30px_80px_rgba(0,0,0,0.16)] flex flex-col overflow-hidden translate-y-2 transition-transform duration-200",
+					"flex max-h-[calc(100vh-48px)] w-[min(680px,100%)] translate-y-2 flex-col overflow-hidden rounded-2xl border border-hair bg-[var(--bg)] text-ink shadow-[0_30px_80px_rgba(0,0,0,0.16)] transition-transform duration-200",
 					open && "translate-y-0",
 				)}
 				onClick={(e) => e.stopPropagation()}
+				onKeyDown={(e) => e.stopPropagation()}
+				role="presentation"
 			>
-				<div className="flex justify-between items-baseline pt-[22px] px-7 max-sm:px-[22px] pb-1.5">
+				<div className="flex items-baseline justify-between px-7 pt-[22px] pb-1.5 max-sm:px-[22px]">
 					<div>
-						<div className="text-[11px] uppercase tracking-[0.14em] text-ink-mute flex items-baseline gap-2.5">
+						<div className="flex items-baseline gap-2.5 text-[11px] text-ink-mute uppercase tracking-[0.14em]">
 							<span>Leasing timeline · 60 seconds</span>
 							<span className="text-ink-faint">·</span>
-							<span className="num">Step {Math.min(step + 1, STEPS)} of {STEPS}</span>
+							<span className="num">
+								Step {Math.min(step + 1, STEPS)} of {STEPS}
+							</span>
 						</div>
 					</div>
 					<button
-						className="appearance-none cursor-pointer text-[22px] text-ink-mute w-8 h-8 grid place-items-center rounded-lg hover:bg-hair hover:text-ink outline-none"
-						onClick={handleClose}
 						aria-label="Close"
+						className="grid h-8 w-8 cursor-pointer appearance-none place-items-center rounded-lg text-[22px] text-ink-mute outline-none hover:bg-hair hover:text-ink"
+						onClick={handleClose}
 						type="button"
 					>
 						×
 					</button>
 				</div>
 
-				<div className="px-7 max-sm:px-[22px] mt-3">
-					<div className="h-[3px] w-full bg-hair rounded-full overflow-hidden">
+				<div className="mt-3 px-7 max-sm:px-[22px]">
+					<div className="h-[3px] w-full overflow-hidden rounded-full bg-hair">
 						<motion.div
+							animate={{ width: `${((step + 1) / STEPS) * 100}%` }}
 							className="h-full bg-ink"
 							initial={false}
-							animate={{ width: `${((step + 1) / STEPS) * 100}%` }}
 							transition={{ duration: 0.35, ease: [0.21, 0.47, 0.32, 0.98] }}
 						/>
 					</div>
 				</div>
 
-				{step > 0 && step < STEPS - 1 && (
-					<LivePreview data={data} estimate={estimate} blurred={step < 2} />
-				)}
+				{step > 0 &&
+					step < STEPS - 1 &&
+					!(step === 2 && gateVariant === "enriched") && (
+						<LivePreview blurred={step < 2} data={data} estimate={estimate} />
+					)}
 
 				{resumed && step === 0 && (
-					<div className="mx-7 max-sm:mx-[22px] mt-4 flex items-center justify-between gap-3 py-2.5 px-3.5 bg-[color-mix(in_oklab,var(--accent),transparent_92%)] border border-[color-mix(in_oklab,var(--accent),transparent_75%)] rounded-lg">
-						<span className="text-[13px] text-ink-soft">Resumed from your last session.</span>
+					<div className="mx-7 mt-4 flex items-center justify-between gap-3 rounded-lg border border-[color-mix(in_oklab,var(--accent),transparent_75%)] bg-[color-mix(in_oklab,var(--accent),transparent_92%)] px-3.5 py-2.5 max-sm:mx-[22px]">
+						<span className="text-[13px] text-ink-soft">
+							Resumed from your last session.
+						</span>
 						<button
-							type="button"
+							className="cursor-pointer text-[12px] text-ink-mute underline hover:text-ink"
 							onClick={() => {
-								try { localStorage.removeItem(STORAGE_KEY); } catch {}
+								try {
+									localStorage.removeItem(STORAGE_KEY);
+								} catch {}
 								setData(EMPTY);
 								setStep(0);
 								setResumed(false);
 							}}
-							className="text-[12px] text-ink-mute hover:text-ink underline cursor-pointer"
+							type="button"
 						>
 							Start over
 						</button>
 					</div>
 				)}
 
-				<div className="flex-1 overflow-y-auto relative">
-					<AnimatePresence mode="wait" custom={dir} initial={false}>
+				<div className="relative flex-1 overflow-y-auto">
+					<AnimatePresence custom={dir} initial={false} mode="wait">
 						<motion.div
-							key={step}
-							custom={dir}
-							variants={slideVariants}
-							initial="enter"
 							animate="center"
+							className="px-7 pt-6 pb-7 max-sm:px-[22px]"
+							custom={dir}
 							exit="exit"
+							initial="enter"
+							key={step}
 							transition={{ duration: 0.32, ease: [0.21, 0.47, 0.32, 0.98] }}
-							className="px-7 max-sm:px-[22px] pt-6 pb-7"
+							variants={slideVariants}
 						>
 							{step === 0 && (
-								<StepLocation data={data} onSet={set} onAdvance={advance} />
+								<StepLocation data={data} onAdvance={advance} onSet={set} />
 							)}
 							{step === 1 && (
-								<StepUnit data={data} onSet={set} onAdvance={advance} />
+								<StepUnit data={data} onAdvance={advance} onSet={set} />
 							)}
 							{step === 2 && (
 								<StepEmailGate
 									data={data}
+									error={error}
+									estimate={estimate}
 									onSet={set}
 									onSubmit={submitEmail}
 									pending={submit.isPending}
-									error={error}
+									variant={gateVariant}
 								/>
 							)}
 							{step === 3 && (
 								<StepResult
+									comps={comps}
 									data={data}
 									estimate={estimate}
-									savings={savings}
-									comps={comps}
 									onBook={() => {
+										trackCTA("form-result", "call");
 										if (onBookCall) {
 											finish();
 											onBookCall();
@@ -326,6 +373,7 @@ export function FormModal({ open, onClose, mode, onBookCall, initialData }: Form
 										setDir(-1);
 										setStep(0);
 									}}
+									savings={savings}
 								/>
 							)}
 						</motion.div>
@@ -333,11 +381,11 @@ export function FormModal({ open, onClose, mode, onBookCall, initialData }: Form
 				</div>
 
 				{step < STEPS - 1 && (
-					<div className="flex justify-between items-center py-[16px] px-7 max-sm:px-[22px] border-t border-hair bg-[color-mix(in_oklab,var(--bg,#FAF8F3),var(--color-ink)_2%)]">
+					<div className="flex items-center justify-between border-hair border-t bg-[color-mix(in_oklab,var(--bg,#FAF8F3),var(--color-ink)_2%)] px-7 py-[16px] max-sm:px-[22px]">
 						<button
-							className="appearance-none cursor-pointer text-[14px] text-ink-mute hover:text-ink disabled:opacity-30 disabled:cursor-not-allowed transition-opacity"
-							onClick={back}
+							className="cursor-pointer appearance-none text-[14px] text-ink-mute transition-opacity hover:text-ink disabled:cursor-not-allowed disabled:opacity-30"
 							disabled={step === 0}
+							onClick={back}
 							type="button"
 						>
 							← Back
@@ -347,11 +395,20 @@ export function FormModal({ open, onClose, mode, onBookCall, initialData }: Form
 								Press <kbd className="num text-ink-mute">Enter</kbd> to continue
 							</span>
 							{step === 2 ? (
-								<Button onClick={submitEmail} className="h-11 px-[18px] text-[14px]" showArrow disabled={submit.isPending}>
+								<Button
+									className="h-11 px-[18px] text-[14px]"
+									disabled={submit.isPending}
+									onClick={submitEmail}
+									showArrow
+								>
 									{submit.isPending ? "Sending…" : "Reveal my estimate"}
 								</Button>
 							) : (
-								<Button onClick={advance} className="h-11 px-[18px] text-[14px]" showArrow>
+								<Button
+									className="h-11 px-[18px] text-[14px]"
+									onClick={advance}
+									showArrow
+								>
 									Continue
 								</Button>
 							)}
@@ -373,22 +430,27 @@ function LivePreview({
 	blurred?: boolean;
 }) {
 	return (
-		<div className="mx-7 max-sm:mx-[22px] mt-4 flex items-baseline justify-between gap-3 py-2.5 px-3.5 bg-[color-mix(in_oklab,var(--bg,#fff),white_35%)] border border-hair rounded-lg">
+		<div className="mx-7 mt-4 flex items-baseline justify-between gap-3 rounded-lg border border-hair bg-[color-mix(in_oklab,var(--bg,#fff),white_35%)] px-3.5 py-2.5 max-sm:mx-[22px]">
 			<div className="flex items-baseline gap-2.5 text-[12px] text-ink-mute uppercase tracking-[0.1em]">
 				<span>Estimate so far</span>
 				<span className="text-ink-faint">·</span>
-				<span className="text-ink normal-case tracking-normal">{data.bedrooms} in {data.neighborhood}</span>
+				<span className="text-ink normal-case tracking-normal">
+					{data.bedrooms} in {data.neighborhood}
+				</span>
 			</div>
 			<div
+				aria-hidden={blurred}
 				className={cn(
 					"flex items-baseline gap-2.5 text-[13px] transition-all duration-300",
-					blurred && "blur-[5px] select-none",
+					blurred && "select-none blur-[5px]",
 				)}
-				aria-hidden={blurred}
 			>
-				<span className="num text-ink font-medium">${estimate.rentLow.toLocaleString()}–${estimate.rentHigh.toLocaleString()}</span>
+				<span className="num font-medium text-ink">
+					${estimate.rentLow.toLocaleString()}–$
+					{estimate.rentHigh.toLocaleString()}
+				</span>
 				<span className="text-ink-faint">·</span>
-				<span className="num text-ink font-medium">{estimate.days}d</span>
+				<span className="num font-medium text-ink">{estimate.days}d</span>
 			</div>
 		</div>
 	);
@@ -405,24 +467,32 @@ function StepLocation({
 }) {
 	return (
 		<div>
-			<h3 className="text-[26px] font-medium tracking-[-0.02em] max-w-[22ch] mb-1.5">Where&apos;s the unit?</h3>
-			<p className="text-[15px] text-ink-soft max-w-[50ch] mb-6">We use building-level comparables, so the neighborhood matters more than the street address.</p>
+			<h3 className="mb-1.5 max-w-[22ch] font-medium text-[26px] tracking-[-0.02em]">
+				Where&apos;s the unit?
+			</h3>
+			<p className="mb-6 max-w-[50ch] text-[15px] text-ink-soft">
+				We use building-level comparables, so the neighborhood matters more than
+				the street address.
+			</p>
 
-			<div className="flex flex-col gap-2 mb-[18px]">
-				<label className="text-[12px] uppercase tracking-[0.12em] text-ink-mute font-medium">Neighborhood</label>
-				<div className="grid grid-cols-3 max-sm:grid-cols-2 gap-2">
+			<div className="mb-[18px] flex flex-col gap-2">
+				<div className="font-medium text-[12px] text-ink-mute uppercase tracking-[0.12em]">
+					Neighborhood
+				</div>
+				<div className="grid grid-cols-3 gap-2 max-sm:grid-cols-2">
 					{NEIGHBORHOODS.map((n) => (
 						<button
+							className={cn(
+								"grid min-h-[48px] cursor-pointer appearance-none place-items-center rounded-lg border border-hair-strong px-3 py-2 text-center text-[14px] transition-colors hover:border-ink",
+								data.neighborhood === n &&
+									"border-ink bg-[color-mix(in_oklab,var(--color-ink),transparent_96%)]",
+							)}
 							key={n}
-							type="button"
 							onClick={() => {
 								onSet("neighborhood", n);
 								setTimeout(onAdvance, 140);
 							}}
-							className={cn(
-								"appearance-none cursor-pointer text-center min-h-[48px] py-2 px-3 grid place-items-center border border-hair-strong rounded-lg text-[14px] transition-colors hover:border-ink",
-								data.neighborhood === n && "border-ink bg-[color-mix(in_oklab,var(--color-ink),transparent_96%)]",
-							)}
+							type="button"
 						>
 							{n}
 						</button>
@@ -430,12 +500,14 @@ function StepLocation({
 				</div>
 			</div>
 			<div className="flex flex-col gap-2">
-				<label className="text-[12px] uppercase tracking-[0.12em] text-ink-mute font-medium">Building or address (optional)</label>
+				<div className="font-medium text-[12px] text-ink-mute uppercase tracking-[0.12em]">
+					Building or address (optional)
+				</div>
 				<input
-					className="h-12 px-3.5 rounded-lg border border-hair-strong bg-[var(--bg,#FAF8F3)] text-ink font-sans text-[16px] outline-none transition-colors duration-150 focus:border-ink"
-					value={data.address}
+					className="h-12 rounded-lg border border-hair-strong bg-[var(--bg,#FAF8F3)] px-3.5 font-sans text-[16px] text-ink outline-none transition-colors duration-150 focus:border-ink"
 					onChange={(e) => onSet("address", e.target.value)}
 					placeholder="e.g. Ice Condos, or 38 Niagara St"
+					value={data.address}
 				/>
 			</div>
 		</div>
@@ -458,52 +530,64 @@ function StepUnit({
 	];
 	return (
 		<div>
-			<h3 className="text-[26px] font-medium tracking-[-0.02em] max-w-[22ch] mb-1.5">What kind of unit?</h3>
-			<p className="text-[15px] text-ink-soft max-w-[50ch] mb-6">Bedroom count moves time-to-lease more than any other input.</p>
+			<h3 className="mb-1.5 max-w-[22ch] font-medium text-[26px] tracking-[-0.02em]">
+				What kind of unit?
+			</h3>
+			<p className="mb-6 max-w-[50ch] text-[15px] text-ink-soft">
+				Bedroom count moves time-to-lease more than any other input.
+			</p>
 
-			<div className="flex flex-col gap-2 mb-[18px]">
-				<label className="text-[12px] uppercase tracking-[0.12em] text-ink-mute font-medium">Bedrooms</label>
-				<div className="grid grid-cols-3 max-sm:grid-cols-2 gap-2">
+			<div className="mb-[18px] flex flex-col gap-2">
+				<div className="font-medium text-[12px] text-ink-mute uppercase tracking-[0.12em]">
+					Bedrooms
+				</div>
+				<div className="grid grid-cols-3 gap-2 max-sm:grid-cols-2">
 					{BEDROOM_TYPES.map((b) => (
 						<button
+							className={cn(
+								"grid h-12 cursor-pointer appearance-none place-items-center rounded-lg border border-hair-strong text-center text-[15px] transition-colors hover:border-ink",
+								data.bedrooms === b &&
+									"border-ink bg-[color-mix(in_oklab,var(--color-ink),transparent_96%)]",
+							)}
 							key={b}
-							type="button"
 							onClick={() => {
 								onSet("bedrooms", b);
 								setTimeout(onAdvance, 140);
 							}}
-							className={cn(
-								"appearance-none cursor-pointer text-center h-12 grid place-items-center border border-hair-strong rounded-lg text-[15px] transition-colors hover:border-ink",
-								data.bedrooms === b && "border-ink bg-[color-mix(in_oklab,var(--color-ink),transparent_96%)]",
-							)}
+							type="button"
 						>
 							{b}
 						</button>
 					))}
 				</div>
 			</div>
-			<div className="flex flex-col gap-2 mb-[18px]">
-				<label className="text-[12px] uppercase tracking-[0.12em] text-ink-mute font-medium">Target rent (optional)</label>
+			<div className="mb-[18px] flex flex-col gap-2">
+				<div className="font-medium text-[12px] text-ink-mute uppercase tracking-[0.12em]">
+					Target rent (optional)
+				</div>
 				<input
-					className="h-12 px-3.5 rounded-lg border border-hair-strong bg-[var(--bg,#FAF8F3)] text-ink font-sans text-[16px] outline-none transition-colors duration-150 focus:border-ink"
+					className="h-12 rounded-lg border border-hair-strong bg-[var(--bg,#FAF8F3)] px-3.5 font-sans text-[16px] text-ink outline-none transition-colors duration-150 focus:border-ink"
 					inputMode="numeric"
-					value={data.targetRent}
 					onChange={(e) => onSet("targetRent", e.target.value)}
 					placeholder="e.g. $2,800"
+					value={data.targetRent}
 				/>
 			</div>
 			<div className="flex flex-col gap-2">
-				<label className="text-[12px] uppercase tracking-[0.12em] text-ink-mute font-medium">Move-in window</label>
-				<div className="grid grid-cols-3 max-sm:grid-cols-2 gap-2">
+				<div className="font-medium text-[12px] text-ink-mute uppercase tracking-[0.12em]">
+					Move-in window
+				</div>
+				<div className="grid grid-cols-3 gap-2 max-sm:grid-cols-2">
 					{MOVE_OPTIONS.map((o) => (
 						<button
-							key={o.k}
-							type="button"
-							onClick={() => onSet("move", o.k)}
 							className={cn(
-								"appearance-none cursor-pointer text-center h-12 grid place-items-center border border-hair-strong rounded-lg text-[15px] transition-colors hover:border-ink",
-								data.move === o.k && "border-ink bg-[color-mix(in_oklab,var(--color-ink),transparent_96%)]",
+								"grid h-12 cursor-pointer appearance-none place-items-center rounded-lg border border-hair-strong text-center text-[15px] transition-colors hover:border-ink",
+								data.move === o.k &&
+									"border-ink bg-[color-mix(in_oklab,var(--color-ink),transparent_96%)]",
 							)}
+							key={o.k}
+							onClick={() => onSet("move", o.k)}
+							type="button"
 						>
 							{o.l}
 						</button>
@@ -517,62 +601,161 @@ function StepUnit({
 function StepEmailGate({
 	data,
 	onSet,
-	onSubmit,
-	pending,
+	onSubmit: _onSubmit,
+	pending: _pending,
 	error,
+	variant,
+	estimate,
 }: {
 	data: FormData;
 	onSet: <K extends keyof FormData>(k: K, v: FormData[K]) => void;
 	onSubmit: () => void;
 	pending: boolean;
 	error: string | null;
+	variant: "control" | "enriched";
+	estimate: ReturnType<typeof runEstimate>;
 }) {
+	if (variant === "enriched") {
+		return (
+			<div>
+				<div className="mb-2 text-[11px] text-accent uppercase tracking-[0.14em]">
+					Your estimate · ready
+				</div>
+				<h3 className="mb-1.5 max-w-[26ch] font-medium text-[26px] tracking-[-0.02em]">
+					{data.bedrooms} in {data.neighborhood} — here&apos;s the snapshot.
+				</h3>
+				<p className="mb-5 max-w-[52ch] text-[15px] text-ink-soft">
+					Enter your email to send the full report with three comparables and
+					your vacancy-savings math.
+				</p>
+
+				<div className="mb-6 grid grid-cols-2 gap-2.5 max-sm:grid-cols-1">
+					<div className="rounded-[10px] border border-hair bg-[color-mix(in_oklab,var(--bg,#fff),white_35%)] px-4 py-3.5">
+						<div className="font-medium text-[11px] text-ink-mute uppercase tracking-[0.12em]">
+							Days to lease
+						</div>
+						<div className="num mt-1 font-medium text-[24px] text-accent">
+							{estimate.days}{" "}
+							<span className="text-[14px] text-ink-mute">days</span>
+						</div>
+					</div>
+					<div className="rounded-[10px] border border-hair bg-[color-mix(in_oklab,var(--bg,#fff),white_35%)] px-4 py-3.5">
+						<div className="font-medium text-[11px] text-ink-mute uppercase tracking-[0.12em]">
+							Suggested rent
+						</div>
+						<div className="num mt-1 font-medium text-[20px]">
+							${estimate.rentLow.toLocaleString()}–$
+							{estimate.rentHigh.toLocaleString()}
+						</div>
+					</div>
+					<div className="rounded-[10px] border border-hair bg-[color-mix(in_oklab,var(--bg,#fff),white_35%)] px-4 py-3.5">
+						<div className="font-medium text-[11px] text-ink-mute uppercase tracking-[0.12em]">
+							List by
+						</div>
+						<div className="num mt-1 font-medium text-[20px]">
+							{estimate.listDate}
+						</div>
+					</div>
+					<div className="rounded-[10px] border border-hair bg-[color-mix(in_oklab,var(--bg,#fff),white_35%)] px-4 py-3.5">
+						<div className="font-medium text-[11px] text-ink-mute uppercase tracking-[0.12em]">
+							Signed by
+						</div>
+						<div className="num mt-1 font-medium text-[20px]">
+							{estimate.leaseBy}
+						</div>
+					</div>
+				</div>
+
+				<div className="mb-[14px] flex flex-col gap-2">
+					<div className="font-medium text-[12px] text-ink-mute uppercase tracking-[0.12em]">
+						Email · for the full report
+					</div>
+					<input
+						autoComplete="email"
+						className="h-12 rounded-lg border border-hair-strong bg-[var(--bg,#FAF8F3)] px-3.5 font-sans text-[16px] text-ink outline-none transition-colors duration-150 focus:border-ink"
+						onChange={(e) => onSet("email", e.target.value)}
+						placeholder="you@domain.com"
+						type="email"
+						value={data.email}
+					/>
+				</div>
+				<div className="flex flex-col gap-2">
+					<div className="font-medium text-[12px] text-ink-mute uppercase tracking-[0.12em]">
+						Name (optional)
+					</div>
+					<input
+						autoComplete="name"
+						className="h-12 rounded-lg border border-hair-strong bg-[var(--bg,#FAF8F3)] px-3.5 font-sans text-[16px] text-ink outline-none transition-colors duration-150 focus:border-ink"
+						onChange={(e) => onSet("name", e.target.value)}
+						placeholder="First name"
+						value={data.name}
+					/>
+				</div>
+
+				{error && (
+					<div className="mt-4 rounded-lg border border-[#fcb] bg-[#fde] px-3.5 py-2.5 text-[#a23] text-[13px]">
+						{error}
+					</div>
+				)}
+
+				<p className="mt-4 max-w-[56ch] text-[12px] text-ink-mute">
+					No marketing emails. No follow-up unless you reply.
+				</p>
+			</div>
+		);
+	}
+
 	return (
 		<div>
-			<div className="text-[11px] uppercase tracking-[0.14em] text-ink-mute mb-2">One last step</div>
-			<h3 className="text-[26px] font-medium tracking-[-0.02em] max-w-[26ch] mb-1.5">
+			<div className="mb-2 text-[11px] text-ink-mute uppercase tracking-[0.14em]">
+				One last step
+			</div>
+			<h3 className="mb-1.5 max-w-[26ch] font-medium text-[26px] tracking-[-0.02em]">
 				Where should we send your 21-day plan?
 			</h3>
-			<p className="text-[15px] text-ink-soft max-w-[52ch] mb-6">
-				You&apos;ll see rent range, days, signed-by date, and three anonymized comparables. No spam, no follow-up unless you reply.
+			<p className="mb-6 max-w-[52ch] text-[15px] text-ink-soft">
+				You&apos;ll see rent range, days, signed-by date, and three anonymized
+				comparables. No spam, no follow-up unless you reply.
 			</p>
 
-			<div className="flex flex-col gap-2 mb-[18px]">
-				<label className="text-[12px] uppercase tracking-[0.12em] text-ink-mute font-medium">Email</label>
+			<div className="mb-[18px] flex flex-col gap-2">
+				<div className="font-medium text-[12px] text-ink-mute uppercase tracking-[0.12em]">
+					Email
+				</div>
 				<input
-					type="email"
-					autoFocus
 					autoComplete="email"
-					className="h-12 px-3.5 rounded-lg border border-hair-strong bg-[var(--bg,#FAF8F3)] text-ink font-sans text-[16px] outline-none transition-colors duration-150 focus:border-ink"
-					value={data.email}
+					className="h-12 rounded-lg border border-hair-strong bg-[var(--bg,#FAF8F3)] px-3.5 font-sans text-[16px] text-ink outline-none transition-colors duration-150 focus:border-ink"
 					onChange={(e) => onSet("email", e.target.value)}
 					placeholder="you@domain.com"
+					type="email"
+					value={data.email}
 				/>
 			</div>
 			<div className="flex flex-col gap-2">
-				<label className="text-[12px] uppercase tracking-[0.12em] text-ink-mute font-medium">Name (optional)</label>
+				<div className="font-medium text-[12px] text-ink-mute uppercase tracking-[0.12em]">
+					Name (optional)
+				</div>
 				<input
 					autoComplete="name"
-					className="h-12 px-3.5 rounded-lg border border-hair-strong bg-[var(--bg,#FAF8F3)] text-ink font-sans text-[16px] outline-none transition-colors duration-150 focus:border-ink"
-					value={data.name}
+					className="h-12 rounded-lg border border-hair-strong bg-[var(--bg,#FAF8F3)] px-3.5 font-sans text-[16px] text-ink outline-none transition-colors duration-150 focus:border-ink"
 					onChange={(e) => onSet("name", e.target.value)}
 					placeholder="First name"
+					value={data.name}
 				/>
 			</div>
 
 			{error && (
-				<div className="mt-4 py-2.5 px-3.5 text-[13px] text-[#a23] bg-[#fde] border border-[#fcb] rounded-lg">
+				<div className="mt-4 rounded-lg border border-[#fcb] bg-[#fde] px-3.5 py-2.5 text-[#a23] text-[13px]">
 					{error}
 				</div>
 			)}
 
-			<p className="text-[12px] text-ink-mute mt-4 max-w-[56ch]">
+			<p className="mt-4 max-w-[56ch] text-[12px] text-ink-mute">
 				We&apos;ll send the full report to your inbox. No marketing emails.
 			</p>
 		</div>
 	);
 }
-
 
 function StepResult({
 	data,
@@ -594,77 +777,134 @@ function StepResult({
 	const anchor = comps[0];
 	return (
 		<div>
-			<div className="text-[11px] uppercase tracking-[0.14em] text-accent mb-2">Estimate sent · check your inbox</div>
-			<h3 className="text-[26px] font-medium tracking-[-0.02em] mb-1">
+			<div className="mb-2 text-[11px] text-accent uppercase tracking-[0.14em]">
+				Estimate sent · check your inbox
+			</div>
+			<h3 className="mb-1 font-medium text-[26px] tracking-[-0.02em]">
 				{data.bedrooms} in {data.neighborhood}
 			</h3>
-			<p className="text-[15px] text-ink-soft mb-5">
-				Based on comparable units leased in the last 90 days. Numbers refresh quarterly.
+			<p className="mb-5 text-[15px] text-ink-soft">
+				Based on comparable units leased in the last 90 days. Numbers refresh
+				quarterly.
 			</p>
 
-			<div className="flex justify-between items-baseline py-[18px] border-b border-hair">
+			<div className="flex items-baseline justify-between border-hair border-b py-[18px]">
 				<div>
-					<div className="text-[12px] uppercase tracking-[0.12em] text-ink-mute font-medium">Estimated days to lease</div>
-					<div className="text-[13px] text-ink-mute mt-1">Average across recent comparables.</div>
+					<div className="font-medium text-[12px] text-ink-mute uppercase tracking-[0.12em]">
+						Estimated days to lease
+					</div>
+					<div className="mt-1 text-[13px] text-ink-mute">
+						Average across recent comparables.
+					</div>
 				</div>
-				<div className="text-[28px] font-medium tracking-[-0.02em] num text-accent">
-					{estimate.days} <span className="text-[16px] text-ink-mute">days</span>
+				<div className="num font-medium text-[28px] text-accent tracking-[-0.02em]">
+					{estimate.days}{" "}
+					<span className="text-[16px] text-ink-mute">days</span>
 				</div>
 			</div>
-			<div className="flex justify-between items-baseline py-[18px] border-b border-hair">
+			<div className="flex items-baseline justify-between border-hair border-b py-[18px]">
 				<div>
-					<div className="text-[12px] uppercase tracking-[0.12em] text-ink-mute font-medium">Suggested rent range</div>
-					<div className="text-[13px] text-ink-mute mt-1">Within ±3% of recent comparables.</div>
+					<div className="font-medium text-[12px] text-ink-mute uppercase tracking-[0.12em]">
+						Suggested rent range
+					</div>
+					<div className="mt-1 text-[13px] text-ink-mute">
+						Within ±3% of recent comparables.
+					</div>
 				</div>
-				<div className="text-[28px] font-medium tracking-[-0.02em] num">
-					${estimate.rentLow.toLocaleString()}–${estimate.rentHigh.toLocaleString()}
+				<div className="num font-medium text-[28px] tracking-[-0.02em]">
+					${estimate.rentLow.toLocaleString()}–$
+					{estimate.rentHigh.toLocaleString()}
 				</div>
 			</div>
-			<div className="flex justify-between items-baseline py-[18px] border-b border-hair">
+			<div className="flex items-baseline justify-between border-hair border-b py-[18px]">
 				<div>
-					<div className="text-[12px] uppercase tracking-[0.12em] text-ink-mute font-medium">Recommended list date</div>
-					<div className="text-[13px] text-ink-mute mt-1">Allows two days for photography & pricing.</div>
+					<div className="font-medium text-[12px] text-ink-mute uppercase tracking-[0.12em]">
+						Recommended list date
+					</div>
+					<div className="mt-1 text-[13px] text-ink-mute">
+						Allows two days for photography & pricing.
+					</div>
 				</div>
-				<div className="text-[28px] font-medium tracking-[-0.02em] num">{estimate.listDate}</div>
+				<div className="num font-medium text-[28px] tracking-[-0.02em]">
+					{estimate.listDate}
+				</div>
 			</div>
-			<div className="flex justify-between items-baseline py-[18px]">
+			<div className="flex items-baseline justify-between py-[18px]">
 				<div>
-					<div className="text-[12px] uppercase tracking-[0.12em] text-ink-mute font-medium">Likely signed by</div>
-					<div className="text-[13px] text-ink-mute mt-1">Inside the 21-day guarantee window.</div>
+					<div className="font-medium text-[12px] text-ink-mute uppercase tracking-[0.12em]">
+						Likely signed by
+					</div>
+					<div className="mt-1 text-[13px] text-ink-mute">
+						Inside the 21-day guarantee window.
+					</div>
 				</div>
-				<div className="text-[28px] font-medium tracking-[-0.02em] num">{estimate.leaseBy}</div>
+				<div className="num font-medium text-[28px] tracking-[-0.02em]">
+					{estimate.leaseBy}
+				</div>
 			</div>
 
 			{anchor && (
-				<div className="mt-4 py-4 px-5 bg-[color-mix(in_oklab,var(--bg,#fff),white_35%)] border border-hair rounded-[10px]">
-					<div className="text-[11px] uppercase tracking-[0.12em] text-ink-mute font-medium mb-1.5">Your unit vs. the most recent comparable</div>
+				<div className="mt-4 rounded-[10px] border border-hair bg-[color-mix(in_oklab,var(--bg,#fff),white_35%)] px-5 py-4">
+					<div className="mb-1.5 font-medium text-[11px] text-ink-mute uppercase tracking-[0.12em]">
+						Your unit vs. the most recent comparable
+					</div>
 					<div className="text-[15px] text-ink leading-[1.5]">
-						A <span className="text-ink font-medium">{anchor.u} in {anchor.n}</span> signed for{" "}
-						<span className="num text-ink font-medium">${anchor.leased.toLocaleString()}</span> in{" "}
-						<span className="num text-ink font-medium">{anchor.days} days</span> on {anchor.signed}. Same playbook, applied to yours.
+						A{" "}
+						<span className="font-medium text-ink">
+							{anchor.u} in {anchor.n}
+						</span>{" "}
+						signed for{" "}
+						<span className="num font-medium text-ink">
+							${anchor.leased.toLocaleString()}
+						</span>{" "}
+						in{" "}
+						<span className="num font-medium text-ink">{anchor.days} days</span>{" "}
+						on {anchor.signed}. Same playbook, applied to yours.
 					</div>
 				</div>
 			)}
 
 			{savings.daysSaved > 0 && (
-				<div className="mt-3 py-4 px-5 bg-[color-mix(in_oklab,var(--accent),transparent_92%)] border border-[color-mix(in_oklab,var(--accent),transparent_75%)] rounded-[10px]">
-					<div className="text-[11px] uppercase tracking-[0.12em] text-accent font-medium mb-1.5">Why this matters</div>
+				<div className="mt-3 rounded-[10px] border border-[color-mix(in_oklab,var(--accent),transparent_75%)] bg-[color-mix(in_oklab,var(--accent),transparent_92%)] px-5 py-4">
+					<div className="mb-1.5 font-medium text-[11px] text-accent uppercase tracking-[0.12em]">
+						Why this matters
+					</div>
 					<div className="text-[15px] text-ink leading-[1.5]">
-						<span className="num text-ink font-medium">{savings.daysSaved} days</span> faster than the Toronto average of <span className="num">{TORONTO_AVG_DAYS}</span> days. At $107/day, that&apos;s
-						<span className="num text-ink font-medium"> ${savings.dollarsSaved.toLocaleString()}</span> of vacancy you don&apos;t pay.
+						<span className="num font-medium text-ink">
+							{savings.daysSaved} days
+						</span>{" "}
+						faster than the Toronto average of{" "}
+						<span className="num">{TORONTO_AVG_DAYS}</span> days. At $107/day,
+						that&apos;s
+						<span className="num font-medium text-ink">
+							{" "}
+							${savings.dollarsSaved.toLocaleString()}
+						</span>{" "}
+						of vacancy you don&apos;t pay.
 					</div>
 				</div>
 			)}
 
 			{comps.length > 0 && (
 				<div className="mt-5">
-					<div className="text-[11px] uppercase tracking-[0.12em] text-ink-mute font-medium mb-3">Comparable recent leases</div>
-					<div className="grid grid-cols-3 max-sm:grid-cols-1 gap-2">
+					<div className="mb-3 font-medium text-[11px] text-ink-mute uppercase tracking-[0.12em]">
+						Comparable recent leases
+					</div>
+					<div className="grid grid-cols-3 gap-2 max-sm:grid-cols-1">
 						{comps.map((c) => (
-							<div key={`${c.n}-${c.u}-${c.signed}`} className="p-3.5 bg-[color-mix(in_oklab,var(--bg,#fff),white_35%)] border border-hair rounded-[10px]">
-								<div className="text-[11px] uppercase tracking-[0.12em] text-ink-mute mb-1">{c.n} · {c.u}</div>
-								<div className="text-[20px] font-medium num">${c.leased.toLocaleString()}</div>
-								<div className="text-[12px] text-ink-mute mt-0.5 num">{c.days} days · {c.signed}</div>
+							<div
+								className="rounded-[10px] border border-hair bg-[color-mix(in_oklab,var(--bg,#fff),white_35%)] p-3.5"
+								key={`${c.n}-${c.u}-${c.signed}`}
+							>
+								<div className="mb-1 text-[11px] text-ink-mute uppercase tracking-[0.12em]">
+									{c.n} · {c.u}
+								</div>
+								<div className="num font-medium text-[20px]">
+									${c.leased.toLocaleString()}
+								</div>
+								<div className="num mt-0.5 text-[12px] text-ink-mute">
+									{c.days} days · {c.signed}
+								</div>
 							</div>
 						))}
 					</div>
@@ -672,28 +912,30 @@ function StepResult({
 			)}
 
 			{estimate.over > 0 && (
-				<div className="mt-4 py-3.5 px-4 bg-[color-mix(in_oklab,var(--ink),transparent_94%)] rounded-[10px] text-[14px] text-ink-soft">
-					Heads-up: your target rent is above our suggested range. We can still list it — the guarantee terms change above 5% over our recommendation.
+				<div className="mt-4 rounded-[10px] bg-[color-mix(in_oklab,var(--ink),transparent_94%)] px-4 py-3.5 text-[14px] text-ink-soft">
+					Heads-up: your target rent is above our suggested range. We can still
+					list it — the guarantee terms change above 5% over our recommendation.
 				</div>
 			)}
 
-			<div className="flex gap-3 mt-6 flex-wrap items-center">
-				<Button onClick={onBook} className="px-5 text-[15px]" showArrow>
+			<div className="mt-6 flex flex-wrap items-center gap-3">
+				<Button className="px-5 text-[15px]" onClick={onBook} showArrow>
 					Book your 15-minute kickoff
 				</Button>
-				<Button variant="ghost" onClick={onClose} className="px-5 text-[15px]">
+				<Button className="px-5 text-[15px]" onClick={onClose} variant="ghost">
 					Close
 				</Button>
 				<button
-					type="button"
+					className="ml-1 cursor-pointer text-[13px] text-ink-mute underline hover:text-ink"
 					onClick={onRestart}
-					className="text-[13px] text-ink-mute hover:text-ink underline cursor-pointer ml-1"
+					type="button"
 				>
 					Start over
 				</button>
 			</div>
-			<p className="text-[13px] text-ink-mute mt-3.5 max-w-[56ch]">
-				The call covers your unit specifically — pricing, photography window, and the exact 21-day calendar. No pitch deck.
+			<p className="mt-3.5 max-w-[56ch] text-[13px] text-ink-mute">
+				The call covers your unit specifically — pricing, photography window,
+				and the exact 21-day calendar. No pitch deck.
 			</p>
 		</div>
 	);
@@ -752,95 +994,127 @@ function CallMode({
 	return (
 		<div
 			className={cn(
-				"fixed inset-0 z-[80] bg-[color-mix(in_oklab,var(--color-ink),transparent_50%)] backdrop-blur-[4px] flex items-center justify-center p-6 opacity-0 pointer-events-none transition-opacity duration-200",
-				open && "opacity-100 pointer-events-auto",
+				"pointer-events-none fixed inset-0 z-[80] flex items-center justify-center bg-[color-mix(in_oklab,var(--color-ink),transparent_50%)] p-6 opacity-0 backdrop-blur-[4px] transition-opacity duration-200",
+				open && "pointer-events-auto opacity-100",
 			)}
 			onClick={onClose}
+			onKeyDown={(e) => {
+				if (e.key === "Enter" || e.key === " ") onClose();
+			}}
+			role="button"
+			tabIndex={-1}
 		>
 			<div
 				className={cn(
-					"bg-[var(--bg)] text-ink w-[min(720px,100%)] max-h-[calc(100vh-48px)] rounded-2xl border border-hair shadow-[0_30px_80px_rgba(0,0,0,0.16)] flex flex-col overflow-hidden translate-y-2 transition-transform duration-200",
+					"flex max-h-[calc(100vh-48px)] w-[min(720px,100%)] translate-y-2 flex-col overflow-hidden rounded-2xl border border-hair bg-[var(--bg)] text-ink shadow-[0_30px_80px_rgba(0,0,0,0.16)] transition-transform duration-200",
 					open && "translate-y-0",
 				)}
 				onClick={(e) => e.stopPropagation()}
+				onKeyDown={(e) => e.stopPropagation()}
+				role="presentation"
 			>
-				<div className="flex justify-between items-baseline pt-[26px] px-7 max-sm:px-[22px] pb-1.5">
+				<div className="flex items-baseline justify-between px-7 pt-[26px] pb-1.5 max-sm:px-[22px]">
 					<div>
-						<div className="text-[11px] uppercase tracking-[0.14em] text-ink-mute">15-minute kickoff</div>
-						<h3 className="text-[26px] font-medium tracking-[-0.02em] mt-2 max-w-[24ch]">
-							{hasContext ? `Schedule your call about your ${data.bedrooms} in ${data.neighborhood}.` : "Pick a window that works."}
+						<div className="text-[11px] text-ink-mute uppercase tracking-[0.14em]">
+							15-minute kickoff
+						</div>
+						<h3 className="mt-2 max-w-[24ch] font-medium text-[26px] tracking-[-0.02em]">
+							{hasContext
+								? `Schedule your call about your ${data.bedrooms} in ${data.neighborhood}.`
+								: "Pick a window that works."}
 						</h3>
 					</div>
 					<button
-						className="appearance-none cursor-pointer text-[22px] text-ink-mute w-8 h-8 grid place-items-center rounded-lg hover:bg-hair hover:text-ink outline-none"
-						onClick={onClose}
 						aria-label="Close"
+						className="grid h-8 w-8 cursor-pointer appearance-none place-items-center rounded-lg text-[22px] text-ink-mute outline-none hover:bg-hair hover:text-ink"
+						onClick={onClose}
 						type="button"
 					>
 						×
 					</button>
 				</div>
-				<div className="px-7 max-sm:px-[22px] pt-2 pb-7 overflow-y-auto">
+				<div className="overflow-y-auto px-7 pt-2 pb-7 max-sm:px-[22px]">
 					{hasContext && (
-						<div className="mb-5 py-3.5 px-4 bg-[color-mix(in_oklab,var(--bg,#fff),white_35%)] border border-hair rounded-[10px] flex flex-wrap gap-x-5 gap-y-1.5 items-baseline text-[13px]">
-							<span className="text-[11px] uppercase tracking-[0.12em] text-ink-mute">From your estimate</span>
-							<span className="num text-ink font-medium">${estimate.rentLow.toLocaleString()}–${estimate.rentHigh.toLocaleString()}</span>
+						<div className="mb-5 flex flex-wrap items-baseline gap-x-5 gap-y-1.5 rounded-[10px] border border-hair bg-[color-mix(in_oklab,var(--bg,#fff),white_35%)] px-4 py-3.5 text-[13px]">
+							<span className="text-[11px] text-ink-mute uppercase tracking-[0.12em]">
+								From your estimate
+							</span>
+							<span className="num font-medium text-ink">
+								${estimate.rentLow.toLocaleString()}–$
+								{estimate.rentHigh.toLocaleString()}
+							</span>
 							<span className="text-ink-faint">·</span>
-							<span className="num text-ink font-medium">{estimate.days} days</span>
+							<span className="num font-medium text-ink">
+								{estimate.days} days
+							</span>
 							<span className="text-ink-faint">·</span>
-							<span className="num text-ink-soft">List by {estimate.listDate}</span>
+							<span className="num text-ink-soft">
+								List by {estimate.listDate}
+							</span>
 						</div>
 					)}
 
 					{useCalEmbed ? (
-						<div className="rounded-[10px] overflow-hidden border border-hair bg-[var(--bg,#FAF8F3)]">
+						<div className="overflow-hidden rounded-[10px] border border-hair bg-[var(--bg,#FAF8F3)]">
 							<iframe
-								title="Book a call"
-								src={`https://cal.com/${calUser}/${calEvent}?embed=true&hide_event_type_details=1&theme=light`}
-								className="w-full h-[560px] max-sm:h-[640px] block"
+								className="block h-[560px] w-full max-sm:h-[640px]"
 								loading="lazy"
+								src={`https://cal.com/${calUser}/${calEvent}?embed=true&hide_event_type_details=1&theme=light`}
+								title="Book a call"
 							/>
 						</div>
 					) : sent ? (
 						<div className="py-8 text-center">
-							<div className="text-[15px] text-ink-soft mb-1">Got it.</div>
-							<div className="text-[22px] font-medium tracking-[-0.02em] mb-2">We&apos;ll be in touch within one business day.</div>
-							<p className="text-[14px] text-ink-mute max-w-[40ch] mx-auto">
+							<div className="mb-1 text-[15px] text-ink-soft">Got it.</div>
+							<div className="mb-2 font-medium text-[22px] tracking-[-0.02em]">
+								We&apos;ll be in touch within one business day.
+							</div>
+							<p className="mx-auto max-w-[40ch] text-[14px] text-ink-mute">
 								Sasha will reach out at {data.email} to confirm a time.
 							</p>
 						</div>
 					) : (
 						<>
-							<p className="text-[15px] text-ink-soft max-w-[50ch] mb-6">
-								A short calendar invite, no deck, no pitch. Fifteen minutes on your unit specifically — pricing, photography window, and the exact 21-day calendar.
+							<p className="mb-6 max-w-[50ch] text-[15px] text-ink-soft">
+								A short calendar invite, no deck, no pitch. Fifteen minutes on
+								your unit specifically — pricing, photography window, and the
+								exact 21-day calendar.
 							</p>
-							<div className="flex flex-col gap-2 mb-[18px]">
-								<label className="text-[12px] uppercase tracking-[0.12em] text-ink-mute font-medium">Your name</label>
+							<div className="mb-[18px] flex flex-col gap-2">
+								<div className="font-medium text-[12px] text-ink-mute uppercase tracking-[0.12em]">
+									Your name
+								</div>
 								<input
-									className="h-12 px-3.5 rounded-lg border border-hair-strong bg-[var(--bg,#FAF8F3)] text-ink font-sans text-[16px] outline-none transition-colors duration-150 focus:border-ink"
-									value={data.name}
+									className="h-12 rounded-lg border border-hair-strong bg-[var(--bg,#FAF8F3)] px-3.5 font-sans text-[16px] text-ink outline-none transition-colors duration-150 focus:border-ink"
 									onChange={(e) => onChange("name", e.target.value)}
 									placeholder="Full name"
+									value={data.name}
 								/>
 							</div>
-							<div className="flex flex-col gap-2 mb-[18px]">
-								<label className="text-[12px] uppercase tracking-[0.12em] text-ink-mute font-medium">Email</label>
+							<div className="mb-[18px] flex flex-col gap-2">
+								<div className="font-medium text-[12px] text-ink-mute uppercase tracking-[0.12em]">
+									Email
+								</div>
 								<input
-									type="email"
-									className="h-12 px-3.5 rounded-lg border border-hair-strong bg-[var(--bg,#FAF8F3)] text-ink font-sans text-[16px] outline-none transition-colors duration-150 focus:border-ink"
-									value={data.email}
+									className="h-12 rounded-lg border border-hair-strong bg-[var(--bg,#FAF8F3)] px-3.5 font-sans text-[16px] text-ink outline-none transition-colors duration-150 focus:border-ink"
 									onChange={(e) => onChange("email", e.target.value)}
 									placeholder="you@domain.com"
+									type="email"
+									value={data.email}
 								/>
 							</div>
-							<div className="flex flex-col gap-2 mb-[18px]">
-								<label className="text-[12px] uppercase tracking-[0.12em] text-ink-mute font-medium">Preferred time</label>
+							<div className="mb-[18px] flex flex-col gap-2">
+								<div className="font-medium text-[12px] text-ink-mute uppercase tracking-[0.12em]">
+									Preferred time
+								</div>
 								<select
-									className="h-12 px-3.5 rounded-lg border border-hair-strong bg-[var(--bg,#FAF8F3)] text-ink font-sans text-[16px] outline-none transition-colors duration-150 focus:border-ink"
-									value={data.timeWindow}
+									className="h-12 rounded-lg border border-hair-strong bg-[var(--bg,#FAF8F3)] px-3.5 font-sans text-[16px] text-ink outline-none transition-colors duration-150 focus:border-ink"
 									onChange={(e) => onChange("timeWindow", e.target.value)}
+									value={data.timeWindow}
 								>
-									<option value="" disabled>Select a window</option>
+									<option disabled value="">
+										Select a window
+									</option>
 									<option>Weekdays, mornings</option>
 									<option>Weekdays, afternoons</option>
 									<option>Weekday evenings</option>
@@ -848,7 +1122,7 @@ function CallMode({
 								</select>
 							</div>
 							{error && (
-								<div className="py-2.5 px-3.5 text-[13px] text-[#a23] bg-[#fde] border border-[#fcb] rounded-lg">
+								<div className="rounded-lg border border-[#fcb] bg-[#fde] px-3.5 py-2.5 text-[#a23] text-[13px]">
 									{error}
 								</div>
 							)}
@@ -856,9 +1130,16 @@ function CallMode({
 					)}
 				</div>
 				{!useCalEmbed && !sent && (
-					<div className="flex justify-between items-center py-[18px] px-7 max-sm:px-[22px] border-t border-hair bg-[color-mix(in_oklab,var(--bg,#FAF8F3),var(--color-ink)_2%)]">
-						<span className="text-[14px] text-ink-mute">We respond within one business day.</span>
-						<Button onClick={send} className="h-11 px-[18px] text-[14px]" showArrow disabled={book.isPending}>
+					<div className="flex items-center justify-between border-hair border-t bg-[color-mix(in_oklab,var(--bg,#FAF8F3),var(--color-ink)_2%)] px-7 py-[18px] max-sm:px-[22px]">
+						<span className="text-[14px] text-ink-mute">
+							We respond within one business day.
+						</span>
+						<Button
+							className="h-11 px-[18px] text-[14px]"
+							disabled={book.isPending}
+							onClick={send}
+							showArrow
+						>
 							{book.isPending ? "Sending…" : "Send request"}
 						</Button>
 					</div>

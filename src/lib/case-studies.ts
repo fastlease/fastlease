@@ -85,7 +85,10 @@ const RAW: Omit<CaseStudy, "slug">[] = [
 	},
 ];
 
-export const CASE_STUDIES: CaseStudy[] = RAW.map((c) => ({ ...c, slug: slugify(c.title) }));
+export const CASE_STUDIES: CaseStudy[] = RAW.map((c) => ({
+	...c,
+	slug: slugify(c.title),
+}));
 
 export function findCaseStudy(slug: string) {
 	return CASE_STUDIES.find((c) => c.slug === slug);

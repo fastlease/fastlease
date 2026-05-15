@@ -1,12 +1,12 @@
 import type { Metadata } from "next";
-import Script from "next/script";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { CASE_STUDIES, findCaseStudy } from "~/lib/case-studies";
-import { SITE, articleSchema } from "~/lib/seo";
-import { Nav } from "~/app/_components/sections/Nav";
+import Script from "next/script";
 import { Footer } from "~/app/_components/sections/Footer";
+import { Nav } from "~/app/_components/sections/Nav";
 import { Reveal } from "~/app/_components/ui/Reveal";
+import { CASE_STUDIES, findCaseStudy } from "~/lib/case-studies";
+import { articleSchema, SITE, toIsoDate } from "~/lib/seo";
 import { CaseStudyCTA } from "./CTA";
 
 export const dynamicParams = false;
@@ -17,7 +17,9 @@ export function generateStaticParams() {
 
 export async function generateMetadata({
 	params,
-}: { params: Promise<{ slug: string }> }): Promise<Metadata> {
+}: {
+	params: Promise<{ slug: string }>;
+}): Promise<Metadata> {
 	const { slug } = await params;
 	const c = findCaseStudy(slug);
 	if (!c) return {};
@@ -36,64 +38,105 @@ export async function generateMetadata({
 
 export default async function Page({
 	params,
-}: { params: Promise<{ slug: string }> }) {
+}: {
+	params: Promise<{ slug: string }>;
+}) {
 	const { slug } = await params;
 	const c = findCaseStudy(slug);
 	if (!c) notFound();
 
 	return (
 		<div className="min-h-screen bg-paper text-ink">
-			<Script id={`ld-cs-${c.slug}`} type="application/ld+json" strategy="afterInteractive">
-				{JSON.stringify(articleSchema({
-					title: c.title,
-					description: c.summary,
-					url: `${SITE.url}/case-studies/${c.slug}`,
-					datePublished: c.signedDate,
-				}))}
+			<Script
+				id={`ld-cs-${c.slug}`}
+				strategy="afterInteractive"
+				type="application/ld+json"
+			>
+				{JSON.stringify(
+					articleSchema({
+						title: c.title,
+						description: c.summary,
+						url: `${SITE.url}/case-studies/${c.slug}`,
+						datePublished: toIsoDate(c.signedDate),
+					}),
+				)}
 			</Script>
 
 			<Nav />
 			<main>
 				<section className="section-pad pt-[clamp(80px,8vw,140px)]">
 					<div className="wrap">
-						<Reveal className="flex items-center gap-3 mb-5 text-[11px] uppercase tracking-[0.14em] text-ink-mute">
-							<Link href="/" className="hover:text-ink underline decoration-hair underline-offset-[3px]">FastLease</Link>
+						<Reveal className="mb-5 flex items-center gap-3 text-[11px] text-ink-mute uppercase tracking-[0.14em]">
+							<Link
+								className="underline decoration-hair underline-offset-[3px] hover:text-ink"
+								href="/"
+							>
+								FastLease
+							</Link>
 							<span className="text-ink-faint">·</span>
 							<span>Case studies</span>
 						</Reveal>
-						<Reveal as="h1" className="text-[clamp(36px,5vw,60px)] font-medium tracking-[-0.03em] leading-[1.05] max-w-[22ch]">
+						<Reveal
+							as="h1"
+							className="max-w-[22ch] font-medium text-[clamp(36px,5vw,60px)] leading-[1.05] tracking-[-0.03em]"
+						>
 							{c.title}
 						</Reveal>
-						<Reveal as="p" className="text-[18px] text-ink-soft mt-5 max-w-[60ch] leading-[1.55]">
+						<Reveal
+							as="p"
+							className="mt-5 max-w-[60ch] text-[18px] text-ink-soft leading-[1.55]"
+						>
 							{c.summary}
 						</Reveal>
 
-						<Reveal className="mt-10 grid grid-cols-4 max-md:grid-cols-2 gap-3">
+						<Reveal className="mt-10 grid grid-cols-4 gap-3 max-md:grid-cols-2">
 							<Stat label="Listed" value={`$${c.listed.toLocaleString()}`} />
 							<Stat label="Leased" value={`$${c.leased.toLocaleString()}`} />
-							<Stat label="Δ vs. ask" value={`${c.leased - c.listed >= 0 ? "+" : "−"}$${Math.abs(c.leased - c.listed)}`} />
-							<Stat label="Days to lease" value={`${c.daysToLease}`} unit="days" />
+							<Stat
+								label="Δ vs. ask"
+								value={`${c.leased - c.listed >= 0 ? "+" : "−"}$${Math.abs(c.leased - c.listed)}`}
+							/>
+							<Stat
+								label="Days to lease"
+								unit="days"
+								value={`${c.daysToLease}`}
+							/>
 						</Reveal>
 					</div>
 				</section>
 
 				<section className="section-pad">
 					<div className="wrap">
-						<Reveal className="flex items-center gap-4 mb-7">
-							<span className="num text-[12px] tracking-[0.14em] text-ink-mute uppercase">01</span>
-							<span className="flex-1 h-[1px] bg-hair" />
-							<span className="text-[11px] font-medium tracking-[0.14em] text-ink-mute uppercase">Timeline</span>
+						<Reveal className="mb-7 flex items-center gap-4">
+							<span className="num text-[12px] text-ink-mute uppercase tracking-[0.14em]">
+								01
+							</span>
+							<span className="h-[1px] flex-1 bg-hair" />
+							<span className="font-medium text-[11px] text-ink-mute uppercase tracking-[0.14em]">
+								Timeline
+							</span>
 						</Reveal>
 						<div className="flex flex-col">
-							{c.weeks.map((w, i) => (
-								<Reveal key={w.day} className="grid grid-cols-[120px_1fr] max-md:grid-cols-1 gap-6 py-7 border-t border-hair last:border-b">
+							{c.weeks.map((w, _i) => (
+								<Reveal
+									className="grid grid-cols-[120px_1fr] gap-6 border-hair border-t py-7 last:border-b max-md:grid-cols-1"
+									key={w.day}
+								>
 									<div>
-										<div className="text-[11px] uppercase tracking-[0.12em] text-ink-mute font-medium">{w.label}</div>
-										<div className="text-[32px] font-medium tracking-[-0.025em] num text-accent mt-1">Day {w.day}</div>
+										<div className="font-medium text-[11px] text-ink-mute uppercase tracking-[0.12em]">
+											{w.label}
+										</div>
+										<div className="num mt-1 font-medium text-[32px] text-accent tracking-[-0.025em]">
+											Day {w.day}
+										</div>
 									</div>
 									<div>
-										<h3 className="text-[20px] font-medium tracking-[-0.01em] mb-2">{w.headline}</h3>
-										<p className="text-[15px] text-ink-soft leading-[1.6] max-w-[60ch]">{w.body}</p>
+										<h3 className="mb-2 font-medium text-[20px] tracking-[-0.01em]">
+											{w.headline}
+										</h3>
+										<p className="max-w-[60ch] text-[15px] text-ink-soft leading-[1.6]">
+											{w.body}
+										</p>
 									</div>
 								</Reveal>
 							))}
@@ -105,13 +148,15 @@ export default async function Page({
 
 				<section className="section-pad">
 					<div className="wrap">
-						<Reveal className="text-[11px] uppercase tracking-[0.14em] text-ink-mute mb-3">Other case studies</Reveal>
+						<Reveal className="mb-3 text-[11px] text-ink-mute uppercase tracking-[0.14em]">
+							Other case studies
+						</Reveal>
 						<div className="flex flex-wrap gap-2">
 							{CASE_STUDIES.filter((o) => o.slug !== c.slug).map((o) => (
 								<Link
-									key={o.slug}
+									className="inline-flex h-9 items-center rounded-full border border-hair-strong px-3.5 text-[13px] transition-colors hover:border-ink"
 									href={`/case-studies/${o.slug}`}
-									className="text-[13px] px-3.5 h-9 inline-flex items-center border border-hair-strong rounded-full hover:border-ink transition-colors"
+									key={o.slug}
 								>
 									{o.title}
 								</Link>
@@ -125,13 +170,27 @@ export default async function Page({
 	);
 }
 
-function Stat({ label, value, unit }: { label: string; value: string; unit?: string }) {
+function Stat({
+	label,
+	value,
+	unit,
+}: {
+	label: string;
+	value: string;
+	unit?: string;
+}) {
 	return (
-		<div className="p-5 bg-[color-mix(in_oklab,var(--bg,#fff),white_35%)] border border-hair rounded-[14px]">
-			<div className="text-[11px] uppercase tracking-[0.12em] text-ink-mute font-medium mb-2">{label}</div>
-			<div className="text-[28px] font-medium tracking-[-0.025em] leading-none num">
+		<div className="rounded-[14px] border border-hair bg-[color-mix(in_oklab,var(--bg,#fff),white_35%)] p-5">
+			<div className="mb-2 font-medium text-[11px] text-ink-mute uppercase tracking-[0.12em]">
+				{label}
+			</div>
+			<div className="num font-medium text-[28px] leading-none tracking-[-0.025em]">
 				{value}
-				{unit && <span className="text-[13px] text-ink-faint font-normal ml-1.5">{unit}</span>}
+				{unit && (
+					<span className="ml-1.5 font-normal text-[13px] text-ink-faint">
+						{unit}
+					</span>
+				)}
 			</div>
 		</div>
 	);

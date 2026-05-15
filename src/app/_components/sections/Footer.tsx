@@ -1,39 +1,93 @@
 import { Wordmark } from "../ui/Logos";
 
-export function Footer({ logoVariant = "timestamp" }: { logoVariant?: "timestamp" | "counter" | "abstract" }) {
+export function Footer({
+	logoVariant = "timestamp",
+}: {
+	logoVariant?: "timestamp" | "counter" | "abstract";
+}) {
 	return (
-		<footer className="py-20 pb-10 border-t border-hair bg-[color-mix(in_oklab,var(--bg),var(--ink)_2%)]">
-			<div className="wrap grid grid-cols-[1.2fr_2fr] max-md:grid-cols-1 gap-14 max-md:gap-8">
+		<footer className="border-hair border-t bg-[color-mix(in_oklab,var(--bg),var(--ink)_2%)] py-20 pb-10">
+			<div className="wrap grid grid-cols-[1.2fr_2fr] gap-14 max-md:grid-cols-1 max-md:gap-8">
 				<div>
 					<Wordmark variant={logoVariant} />
-					<p className="text-[14px] text-ink-soft mt-3.5 max-w-[34ch]">A 21-day leasing system for Toronto condo owners, operated through Property.ca Inc. Brokerage.</p>
+					<p className="mt-3.5 max-w-[34ch] text-[14px] text-ink-soft">
+						A 21-day leasing system for Toronto condo owners, operated through
+						Property.ca Inc. Brokerage.
+					</p>
 				</div>
-				<div className="grid grid-cols-3 max-sm:grid-cols-2 gap-6">
+				<div className="grid grid-cols-3 gap-6 max-sm:grid-cols-2">
 					<div>
-						<div className="text-[11px] font-medium tracking-[0.12em] text-ink-mute uppercase mb-3.5">The page</div>
-						<a href="#how" className="block text-[14px] text-ink-soft mb-2 hover:text-ink transition-colors">How It Works</a>
-						<a href="#pricing" className="block text-[14px] text-ink-soft mb-2 hover:text-ink transition-colors">Pricing</a>
-						<a href="#leases" className="block text-[14px] text-ink-soft mb-2 hover:text-ink transition-colors">Recent Leases</a>
-						<a href="#operator" className="block text-[14px] text-ink-soft mb-2 hover:text-ink transition-colors">Who runs it</a>
+						<div className="mb-3.5 font-medium text-[11px] text-ink-mute uppercase tracking-[0.12em]">
+							The page
+						</div>
+						<a
+							className="mb-2 block text-[14px] text-ink-soft transition-colors hover:text-ink"
+							href="#how"
+						>
+							How It Works
+						</a>
+						<a
+							className="mb-2 block text-[14px] text-ink-soft transition-colors hover:text-ink"
+							href="#pricing"
+						>
+							Pricing
+						</a>
+						<a
+							className="mb-2 block text-[14px] text-ink-soft transition-colors hover:text-ink"
+							href="#leases"
+						>
+							Recent Leases
+						</a>
+						<a
+							className="mb-2 block text-[14px] text-ink-soft transition-colors hover:text-ink"
+							href="#operator"
+						>
+							Who runs it
+						</a>
 					</div>
 					<div>
-						<div className="text-[11px] font-medium tracking-[0.12em] text-ink-mute uppercase mb-3.5">Operations</div>
-						<a className="block text-[14px] text-ink-soft mb-2 hover:text-ink transition-colors" href="mailto:sasha@fastlease.ca">sasha@fastlease.ca</a>
-						<a className="block text-[14px] text-ink-soft mb-2 hover:text-ink transition-colors" href="tel:+14165550121">+1 (416) 555-0121</a>
-						<span className="block text-[14px] text-ink-soft mb-2">Sasha Bastani, Broker</span>
+						<div className="mb-3.5 font-medium text-[11px] text-ink-mute uppercase tracking-[0.12em]">
+							Operations
+						</div>
+						<a
+							className="mb-2 block text-[14px] text-ink-soft transition-colors hover:text-ink"
+							href="mailto:sasha@fastlease.ca"
+						>
+							sasha@fastlease.ca
+						</a>
+						<a
+							className="mb-2 block text-[14px] text-ink-soft transition-colors hover:text-ink"
+							href="tel:+14165550121"
+						>
+							+1 (416) 555-0121
+						</a>
+						<span className="mb-2 block text-[14px] text-ink-soft">
+							Sasha Bastani, Broker
+						</span>
 					</div>
 					<div>
-						<div className="text-[11px] font-medium tracking-[0.12em] text-ink-mute uppercase mb-3.5">Coverage</div>
-						<div className="text-[14px] text-ink-soft mb-2">Downtown · East End</div>
-						<div className="text-[14px] text-ink-soft mb-2">Midtown · Waterfront</div>
-						<div className="text-[14px] text-ink-soft mb-2">98 buildings · 12 districts</div>
+						<div className="mb-3.5 font-medium text-[11px] text-ink-mute uppercase tracking-[0.12em]">
+							Coverage
+						</div>
+						<div className="mb-2 text-[14px] text-ink-soft">
+							Downtown · East End
+						</div>
+						<div className="mb-2 text-[14px] text-ink-soft">
+							Midtown · Waterfront
+						</div>
+						<div className="mb-2 text-[14px] text-ink-soft">
+							98 buildings · 12 districts
+						</div>
 					</div>
 				</div>
 			</div>
 			<div className="wrap mt-14">
-				<hr className="border-t border-hair" />
+				<hr className="border-hair border-t" />
 				<div className="flex justify-between pt-6 text-[12px] text-ink-mute max-md:flex-col max-md:gap-1.5">
-					<span>© 2026 Property.ca Inc. Brokerage · FastLease is a service offering of Property.ca Inc. Brokerage.</span>
+					<span>
+						© 2026 Property.ca Inc. Brokerage · FastLease is a service offering
+						of Property.ca Inc. Brokerage.
+					</span>
 					<span>Brokerage licensed in Ontario.</span>
 				</div>
 			</div>

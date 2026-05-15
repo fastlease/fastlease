@@ -30,11 +30,18 @@ export const env = createEnv({
 		NEXT_PUBLIC_CAL_USERNAME: z.string().optional(),
 		NEXT_PUBLIC_CAL_EVENT: z.string().optional().default("15min"),
 		NEXT_PUBLIC_POSTHOG_KEY: z.string().optional(),
-		NEXT_PUBLIC_POSTHOG_HOST: z.string().optional().default("https://us.i.posthog.com"),
+		NEXT_PUBLIC_POSTHOG_HOST: z
+			.string()
+			.optional()
+			.default("https://us.i.posthog.com"),
 		NEXT_PUBLIC_META_PIXEL_ID: z.string().optional(),
 		NEXT_PUBLIC_GADS_ID: z.string().optional(),
 		NEXT_PUBLIC_SMS_NUMBER: z.string().optional(),
-		NEXT_PUBLIC_SITE_URL: z.string().url().optional().default("https://fastlease.ca"),
+		NEXT_PUBLIC_SITE_URL: z
+			.string()
+			.url()
+			.optional()
+			.default("https://fastlease.ca"),
 		// Operator identity (public-facing — surfaced in Operator section)
 		NEXT_PUBLIC_RECO_LICENSE_NUMBER: z.string().optional(),
 		NEXT_PUBLIC_LOOM_VIDEO_ID: z.string().optional(),
@@ -56,7 +63,8 @@ export const env = createEnv({
 		NEXT_PUBLIC_GADS_ID: process.env.NEXT_PUBLIC_GADS_ID,
 		NEXT_PUBLIC_SMS_NUMBER: process.env.NEXT_PUBLIC_SMS_NUMBER,
 		NEXT_PUBLIC_SITE_URL: process.env.NEXT_PUBLIC_SITE_URL,
-		NEXT_PUBLIC_RECO_LICENSE_NUMBER: process.env.NEXT_PUBLIC_RECO_LICENSE_NUMBER,
+		NEXT_PUBLIC_RECO_LICENSE_NUMBER:
+			process.env.NEXT_PUBLIC_RECO_LICENSE_NUMBER,
 		NEXT_PUBLIC_LOOM_VIDEO_ID: process.env.NEXT_PUBLIC_LOOM_VIDEO_ID,
 	},
 	skipValidation: !!process.env.SKIP_ENV_VALIDATION,

@@ -42,9 +42,14 @@ function fmt(d: Date) {
 	return d.toLocaleDateString("en-CA", { month: "short", day: "numeric" });
 }
 
-function neighborhoodBaseDays(neighborhood: string | undefined, bedrooms: string): number {
+function neighborhoodBaseDays(
+	neighborhood: string | undefined,
+	bedrooms: string,
+): number {
 	if (neighborhood) {
-		const exact = LEASES.filter((l) => l.n === neighborhood && l.u === bedrooms);
+		const exact = LEASES.filter(
+			(l) => l.n === neighborhood && l.u === bedrooms,
+		);
 		if (exact.length) {
 			return Math.round(exact.reduce((s, l) => s + l.days, 0) / exact.length);
 		}
@@ -56,8 +61,12 @@ function neighborhoodBaseDays(neighborhood: string | undefined, bedrooms: string
 	return BASE_OFFSETS[bedrooms] ?? 16;
 }
 
-export function dailyRent(neighborhood: string | undefined, bedrooms: string): number {
-	const mult = (neighborhood && NEIGHBORHOOD_MULT[neighborhood]) ?? 1.0;
+export function dailyRent(
+	neighborhood: string | undefined,
+	bedrooms: string,
+): number {
+	const mult =
+		(neighborhood ? NEIGHBORHOOD_MULT[neighborhood] : undefined) ?? 1.0;
 	const rec = REC_RENTS[bedrooms] ?? 2650;
 	return Math.round((rec * mult) / 30);
 }
@@ -71,8 +80,10 @@ export function estimate({
 	const base = neighborhoodBaseDays(neighborhood, bedrooms);
 	const m = date.getMonth();
 	const seasonal = m >= 4 && m <= 7 ? -2 : m === 11 || m === 0 ? 2 : 0;
-	const target = Number.parseInt((targetRent ?? "").replace(/[^0-9]/g, ""), 10) || 0;
-	const mult = (neighborhood && NEIGHBORHOOD_MULT[neighborhood]) ?? 1.0;
+	const target =
+		Number.parseInt((targetRent ?? "").replace(/[^0-9]/g, ""), 10) || 0;
+	const mult =
+		(neighborhood ? NEIGHBORHOOD_MULT[neighborhood] : undefined) ?? 1.0;
 	const recRent = Math.round(((REC_RENTS[bedrooms] ?? 2650) * mult) / 25) * 25;
 
 	let over = 0;
@@ -95,7 +106,10 @@ export function estimate({
 	};
 }
 
-export function vacancySavings(estDays: number, dailyRent = DAILY_RENT_BENCHMARK): { daysSaved: number; dollarsSaved: number } {
+export function vacancySavings(
+	estDays: number,
+	dailyRent = DAILY_RENT_BENCHMARK,
+): { daysSaved: number; dollarsSaved: number } {
 	const daysSaved = Math.max(0, TORONTO_AVG_DAYS - estDays);
 	return { daysSaved, dollarsSaved: daysSaved * dailyRent };
 }

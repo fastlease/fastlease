@@ -1,10 +1,12 @@
 // Meta Pixel loader — reads window.__META_PIXEL_ID
-(function () {
+(() => {
 	var id = window.__META_PIXEL_ID;
 	if (!id) return;
-	!function (f, b, e, v, n, t, s) {
+	!((f, b, e, v, n, t, s) => {
 		if (f.fbq) return;
-		n = f.fbq = function () { n.callMethod ? n.callMethod.apply(n, arguments) : n.queue.push(arguments); };
+		n = f.fbq = function () {
+			n.callMethod ? n.callMethod.apply(n, arguments) : n.queue.push(arguments);
+		};
 		if (!f._fbq) f._fbq = n;
 		n.push = n;
 		n.loaded = !0;
@@ -15,7 +17,12 @@
 		t.src = v;
 		s = b.getElementsByTagName(e)[0];
 		s.parentNode.insertBefore(t, s);
-	}(window, document, "script", "https://connect.facebook.net/en_US/fbevents.js");
+	})(
+		window,
+		document,
+		"script",
+		"https://connect.facebook.net/en_US/fbevents.js",
+	);
 	window.fbq("init", id);
 	window.fbq("track", "PageView");
 })();

@@ -1,134 +1,168 @@
 @import "tailwindcss";
 
 @theme {
-  /* Fonts */
-  --font-sans: "Plus Jakarta Sans", ui-sans-serif, system-ui, -apple-system, sans-serif;
-  --font-mono: "JetBrains Mono", ui-monospace, monospace;
+	/* Fonts (next/font CSS variables, with fallbacks) */
+	--font-sans:
+		var(--font-plus-jakarta-sans), ui-sans-serif, system-ui, -apple-system,
+		sans-serif;
+	--font-mono: var(--font-jetbrains-mono), ui-monospace, monospace;
 
-  /* Color System */
-  --color-ink: var(--ink);
-  --color-ink-soft: var(--ink-soft);
-  --color-ink-mute: var(--ink-mute);
-  --color-ink-faint: var(--ink-faint);
-  
-  --color-paper: var(--paper);
-  --color-paper-warm: var(--paper-warm);
-  --color-paper-cool: var(--paper-cool);
-  --color-paper-pure: var(--paper-pure);
-  
-  --color-accent: var(--accent);
-  --color-accent-ink: var(--accent-ink);
-  
-  --color-hair: var(--hair);
-  --color-hair-strong: var(--hair-strong);
+	/* Color System */
+	--color-ink: var(--ink);
+	--color-ink-soft: var(--ink-soft);
+	--color-ink-mute: var(--ink-mute);
+	--color-ink-faint: var(--ink-faint);
 
-  /* Layout Variables */
-  --spacing-maxw: 1200px;
+	--color-paper: var(--paper);
+	--color-paper-warm: var(--paper-warm);
+	--color-paper-cool: var(--paper-cool);
+	--color-paper-pure: var(--paper-pure);
 
-  /* Animations */
-  --animate-pulse-once: pulse-once 1400ms ease-out 600ms 1 forwards;
-  
-  @keyframes pulse-once {
-    0% { transform: scale(0.8); }
-    60% { transform: scale(1.5); box-shadow: 0 0 0 14px color-mix(in oklab, var(--color-accent), transparent 90%); }
-    100% { transform: scale(1); }
-  }
+	--color-accent: var(--accent);
+	--color-accent-ink: var(--accent-ink);
+
+	--color-hair: var(--hair);
+	--color-hair-strong: var(--hair-strong);
+
+	/* Layout Variables */
+	--spacing-maxw: 1200px;
+
+	/* Animations */
+	--animate-pulse-once: pulse-once 1400ms ease-out 600ms 1 forwards;
+
+	@keyframes pulse-once {
+		0% {
+			transform: scale(0.8);
+		}
+		60% {
+			transform: scale(1.5);
+			box-shadow: 0 0 0 14px
+				color-mix(in oklab, var(--color-accent), transparent 90%);
+		}
+		100% {
+			transform: scale(1);
+		}
+	}
 }
 
 /* Base Variable Defaults (Premium Direction) */
 :root {
-  --ink: #22201D;
-  --ink-soft: rgba(34, 32, 29, 0.72);
-  --ink-mute: rgba(34, 32, 29, 0.52);
-  --ink-faint: rgba(34, 32, 29, 0.32);
-  --paper: #FAF8F3;
-  --paper-warm: #F4EFE7;
-  --paper-cool: #F7F7F5;
-  --paper-pure: #FFFFFF;
-  --accent: #B8553A;
-  --accent-ink: #FFFFFF;
-  --hair: rgba(34, 32, 29, 0.10);
-  --hair-strong: rgba(34, 32, 29, 0.18);
-  --bg: var(--paper);
+	--ink: #22201d;
+	--ink-soft: rgba(34, 32, 29, 0.72);
+	--ink-mute: rgba(34, 32, 29, 0.52);
+	--ink-faint: rgba(34, 32, 29, 0.32);
+	--paper: #faf8f3;
+	--paper-warm: #f4efe7;
+	--paper-cool: #f7f7f5;
+	--paper-pure: #ffffff;
+	--accent: #b8553a;
+	--accent-ink: #ffffff;
+	--hair: rgba(34, 32, 29, 0.1);
+	--hair-strong: rgba(34, 32, 29, 0.18);
+	--bg: var(--paper);
 }
 
 /* Direction Variants */
 [data-direction="operator"] {
-  --ink: #1A1A1A;
-  --ink-soft: rgba(26, 26, 26, 0.72);
-  --ink-mute: rgba(26, 26, 26, 0.52);
-  --ink-faint: rgba(26, 26, 26, 0.30);
-  --accent: #1F4438;
-  --hair: #E5E3DC;
-  --hair-strong: #CFCCC1;
+	--ink: #1a1a1a;
+	--ink-soft: rgba(26, 26, 26, 0.72);
+	--ink-mute: rgba(26, 26, 26, 0.52);
+	--ink-faint: rgba(26, 26, 26, 0.3);
+	--accent: #1f4438;
+	--hair: #e5e3dc;
+	--hair-strong: #cfccc1;
 }
 
 [data-direction="precise"] {
-  --ink: #0F1115;
-  --ink-soft: rgba(15, 17, 21, 0.74);
-  --ink-mute: rgba(15, 17, 21, 0.55);
-  --ink-faint: rgba(15, 17, 21, 0.32);
-  --accent: #2D3FE6;
-  --hair: #E4E4E1;
-  --hair-strong: #CFCFCC;
+	--ink: #0f1115;
+	--ink-soft: rgba(15, 17, 21, 0.74);
+	--ink-mute: rgba(15, 17, 21, 0.55);
+	--ink-faint: rgba(15, 17, 21, 0.32);
+	--accent: #2d3fe6;
+	--hair: #e4e4e1;
+	--hair-strong: #cfcfcc;
 }
 
 /* Paper Overrides */
-[data-paper="warmest"] { --bg: #FAF8F3; }
-[data-paper="warm"]    { --bg: #F4EFE7; }
-[data-paper="cool"]    { --bg: #F7F7F5; }
-[data-paper="white"]   { --bg: #FFFFFF; }
+[data-paper="warmest"] {
+	--bg: #faf8f3;
+}
+[data-paper="warm"] {
+	--bg: #f4efe7;
+}
+[data-paper="cool"] {
+	--bg: #f7f7f5;
+}
+[data-paper="white"] {
+	--bg: #ffffff;
+}
 
 @layer base {
-  *, ::after, ::before {
-    box-sizing: border-box;
-  }
+	*,
+	::after,
+	::before {
+		box-sizing: border-box;
+	}
 
-  html, body {
-    margin: 0;
-    padding: 0;
-    background: var(--bg);
-    color: var(--ink);
-    font-family: var(--font-sans);
-    font-size: 17px;
-    line-height: 1.55;
-    -webkit-font-smoothing: antialiased;
-    text-rendering: optimizeLegibility;
-  }
+	html,
+	body {
+		margin: 0;
+		padding: 0;
+		background: var(--bg);
+		color: var(--ink);
+		font-family: var(--font-sans);
+		font-size: 17px;
+		line-height: 1.55;
+		-webkit-font-smoothing: antialiased;
+		text-rendering: optimizeLegibility;
+	}
 
-  h1, h2, h3, h4 {
-    margin: 0;
-    font-weight: 500;
-    letter-spacing: -0.02em;
-    line-height: 1.05;
-  }
+	h1,
+	h2,
+	h3,
+	h4 {
+		margin: 0;
+		font-weight: 500;
+		letter-spacing: -0.02em;
+		line-height: 1.05;
+	}
 
-  h1 { font-size: clamp(40px, 6.4vw, 84px); letter-spacing: -0.03em; }
-  h2 { font-size: clamp(32px, 4.4vw, 56px); letter-spacing: -0.025em; }
-  h3 { font-size: clamp(20px, 2.2vw, 28px); letter-spacing: -0.015em; line-height: 1.2; }
-  
-  a {
-    color: inherit;
-    text-decoration: none;
-  }
+	h1 {
+		font-size: clamp(40px, 6.4vw, 84px);
+		letter-spacing: -0.03em;
+	}
+	h2 {
+		font-size: clamp(32px, 4.4vw, 56px);
+		letter-spacing: -0.025em;
+	}
+	h3 {
+		font-size: clamp(20px, 2.2vw, 28px);
+		letter-spacing: -0.015em;
+		line-height: 1.2;
+	}
 
-  /* Precise mono-font numbers */
-  [data-direction="precise"] .num {
-    font-family: var(--font-mono);
-    letter-spacing: -0.01em;
-  }
+	a {
+		color: inherit;
+		text-decoration: none;
+	}
+
+	/* Precise mono-font numbers */
+	[data-direction="precise"] .num {
+		font-family: var(--font-mono);
+		letter-spacing: -0.01em;
+	}
 }
 
 @layer components {
-  .wrap {
-    max-width: var(--spacing-maxw);
-    margin: 0 auto;
-    padding-left: clamp(20px, 5vw, 64px);
-    padding-right: clamp(20px, 5vw, 64px);
-  }
+	.wrap {
+		max-width: var(--spacing-maxw);
+		margin: 0 auto;
+		padding-left: clamp(20px, 5vw, 64px);
+		padding-right: clamp(20px, 5vw, 64px);
+	}
 
-  .section-pad {
-    padding-top: clamp(80px, 11vw, 140px);
-    padding-bottom: clamp(80px, 11vw, 140px);
-  }
+	.section-pad {
+		padding-top: clamp(80px, 11vw, 140px);
+		padding-bottom: clamp(80px, 11vw, 140px);
+	}
 }

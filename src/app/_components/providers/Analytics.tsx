@@ -3,8 +3,8 @@
 import Script from "next/script";
 import { useEffect } from "react";
 import { env } from "~/env";
+import { Events, track } from "~/lib/analytics";
 import { captureAttributionFromUrl } from "~/lib/referral";
-import { track, Events } from "~/lib/analytics";
 
 /**
  * Loads analytics tags only when their env keys are set. We use vendor loaders
@@ -29,7 +29,10 @@ export function Analytics() {
 					<Script id="posthog-config" strategy="beforeInteractive">
 						{`window.__PH_CONFIG={key:${JSON.stringify(env.NEXT_PUBLIC_POSTHOG_KEY)},host:${JSON.stringify(env.NEXT_PUBLIC_POSTHOG_HOST)}};`}
 					</Script>
-					<Script src="/scripts/posthog-loader.js" strategy="afterInteractive" />
+					<Script
+						src="/scripts/posthog-loader.js"
+						strategy="afterInteractive"
+					/>
 				</>
 			)}
 			{env.NEXT_PUBLIC_META_PIXEL_ID && (

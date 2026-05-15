@@ -9,7 +9,8 @@ export const metadata: Metadata = {
 	alternates: { canonical: `${SITE.url}/tenants` },
 	openGraph: {
 		title: "Find your next Toronto condo — FastLease shortlist",
-		description: "Early access to incoming condo leases from Property.ca Inc. Brokerage.",
+		description:
+			"Early access to incoming condo leases from Property.ca Inc. Brokerage.",
 		url: `${SITE.url}/tenants`,
 	},
 };

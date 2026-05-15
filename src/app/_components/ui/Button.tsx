@@ -15,22 +15,23 @@ export const Button: FC<ButtonProps> = ({
 	...props
 }) => {
 	const variants = {
-		primary: "bg-accent text-accent-ink hover:bg-[color-mix(in_oklab,var(--accent),black_12%)]",
+		primary:
+			"bg-accent text-accent-ink hover:bg-[color-mix(in_oklab,var(--accent),black_12%)]",
 		ghost: "bg-transparent text-ink border-hair-strong border hover:border-ink",
 	};
 
 	return (
 		<button
 			className={cn(
-				"inline-flex items-center justify-center gap-[10px] h-[52px] px-[22px] rounded-full font-medium text-[16px] transition-all duration-120 cursor-pointer outline-none",
+				"inline-flex h-[52px] cursor-pointer items-center justify-center gap-[10px] rounded-full px-[22px] font-medium text-[16px] outline-none transition-all duration-120",
 				variants[variant],
-				className
+				className,
 			)}
 			{...props}
 		>
 			{children}
 			{showArrow && (
-				<span className="text-[18px] translate-y-[-1px] leading-none">→</span>
+				<span className="translate-y-[-1px] text-[18px] leading-none">→</span>
 			)}
 		</button>
 	);

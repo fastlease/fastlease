@@ -1,6 +1,12 @@
 "use client";
 
-import { useInView, useMotionValue, useSpring, useTransform, motion } from "framer-motion";
+import {
+	motion,
+	useInView,
+	useMotionValue,
+	useSpring,
+	useTransform,
+} from "framer-motion";
 import { useEffect, useRef } from "react";
 import { cn } from "~/lib/utils";
 
@@ -29,9 +35,10 @@ export function CountUp({
 	});
 
 	const displayValue = useTransform(springValue, (latest) => {
-		const formatted = decimals > 0 
-			? latest.toFixed(decimals) 
-			: Math.round(latest).toLocaleString();
+		const formatted =
+			decimals > 0
+				? latest.toFixed(decimals)
+				: Math.round(latest).toLocaleString();
 		return `${prefix}${formatted}${suffix}`;
 	});
 
@@ -42,10 +49,7 @@ export function CountUp({
 	}, [isInView, to, motionValue]);
 
 	return (
-		<motion.span 
-			ref={ref} 
-			className={cn("num", className)}
-		>
+		<motion.span className={cn("num", className)} ref={ref}>
 			{displayValue}
 		</motion.span>
 	);

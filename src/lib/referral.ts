@@ -18,8 +18,8 @@ export interface Attribution {
 	landingPath?: string;
 }
 
-export function captureAttributionFromUrl(): Attribution | null {
-	if (typeof window === "undefined") return null;
+export function captureAttributionFromUrl(): Attribution | undefined {
+	if (typeof window === "undefined") return undefined;
 	const url = new URL(window.location.href);
 	const params = url.searchParams;
 
@@ -28,7 +28,8 @@ export function captureAttributionFromUrl(): Attribution | null {
 	const utm_medium = params.get("utm_medium") ?? undefined;
 	const utm_campaign = params.get("utm_campaign") ?? undefined;
 
-	if (!ref && !utm_source && !utm_medium && !utm_campaign) return readAttribution();
+	if (!ref && !utm_source && !utm_medium && !utm_campaign)
+		return readAttribution();
 
 	const attr: Attribution = {
 		referralCode: ref,

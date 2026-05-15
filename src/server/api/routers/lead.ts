@@ -1,6 +1,6 @@
 import { z } from "zod";
-import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
 import { env } from "~/env";
+import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
 
 const attributionSchema = z
 	.object({
@@ -153,7 +153,12 @@ export const leadRouter = createTRPCRouter({
 		}),
 });
 
-async function notify(id: string, kind: string, email: string, payload: unknown) {
+async function notify(
+	id: string,
+	kind: string,
+	email: string,
+	payload: unknown,
+) {
 	if (!env.RESEND_API_KEY || !env.LEAD_NOTIFY_EMAIL) return;
 	// Resend transactional send — replace with real client when adding @react-email
 	await fetch("https://api.resend.com/emails", {

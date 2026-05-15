@@ -1,3 +1,4 @@
+// @ts-nocheck
 // Google Ads gtag init — reads window.__GADS_ID
 (() => {
 	var id = window.__GADS_ID;

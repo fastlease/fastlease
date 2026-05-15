@@ -1,3 +1,4 @@
+// @ts-nocheck
 // Meta Pixel loader — reads window.__META_PIXEL_ID
 (() => {
 	var id = window.__META_PIXEL_ID;

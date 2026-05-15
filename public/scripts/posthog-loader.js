@@ -1,3 +1,4 @@
+// @ts-nocheck
 // PostHog autoload — reads config from window.__PH_CONFIG injected via meta.
 (() => {
 	var cfg = window.__PH_CONFIG;

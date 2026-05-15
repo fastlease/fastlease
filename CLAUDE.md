@@ -2,6 +2,8 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+For SEO, content strategy, copywriting, or marketing decisions, also read **`.agents/product-marketing.md`** — it captures the content pillars, voice/tone, non-negotiables (RECO ethics, no fabricated data, no eviction content), recipes for adding new pages, and anti-patterns to refuse. The seo-audit, programmatic-seo, ai-seo, and content-strategy skills auto-load that file.
+
 ## What this is
 
 FastLease.ca — a single-page Toronto condo leasing landing site for Property.ca Inc. Brokerage, plus auto-generated `/neighborhoods/<slug>`, `/case-studies/<slug>`, and `/tenants` pages. Bootstrapped from create-t3-app (Next.js 15 App Router, React 19, TS, Tailwind v4, tRPC, Prisma, NextAuth scaffold, Framer Motion). Package manager is **pnpm**.

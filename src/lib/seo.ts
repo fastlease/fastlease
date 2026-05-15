@@ -7,8 +7,7 @@ export const SITE = {
 	name: "FastLease",
 	legalName: "FastLease — operated by Property.ca Inc. Brokerage",
 	url: "https://fastlease.ca",
-	// telephone: real public number to add (was a placeholder — removed to avoid NAP mismatch with Google Business Profile)
-	telephone: undefined as string | undefined,
+	telephone: "+1-647-835-6368",
 	description:
 		"21-day Toronto condo leasing. Featured on property.ca and condos.ca. Or 21% off the fee.",
 } as const;

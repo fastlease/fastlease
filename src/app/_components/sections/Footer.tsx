@@ -51,15 +51,15 @@ export function Footer({
 						</div>
 						<a
 							className="mb-2 block text-[14px] text-ink-soft transition-colors hover:text-ink"
-							href="mailto:sasha@fastlease.ca"
+							href="mailto:contact@fastlease.ca"
 						>
-							sasha@fastlease.ca
+							contact@fastlease.ca
 						</a>
 						<a
 							className="mb-2 block text-[14px] text-ink-soft transition-colors hover:text-ink"
-							href="tel:+14165550121"
+							href="tel:+16478356368"
 						>
-							+1 (416) 555-0121
+							+1 (647) 835-6368
 						</a>
 						<span className="mb-2 block text-[14px] text-ink-soft">
 							Sasha Bastani, Broker

@@ -1,0 +1,3 @@
+## 2024-05-16 - Missing Keyboard Focus Indicators
+**Learning:** Many interactive elements, including the primary Button component, were hiding keyboard focus indicators entirely by using `outline-none` without providing `focus-visible` styles as a fallback. This made keyboard navigation difficult or impossible to track visually for users relying on it.
+**Action:** Always replace `outline-none` with accessible alternatives using `focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink` to ensure a consistent, visible focus state for keyboard users without affecting mouse users. Included `disabled` states when modifying the base Button as well.

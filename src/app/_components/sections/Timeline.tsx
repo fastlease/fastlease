@@ -36,6 +36,11 @@ const PHASES = [
 
 const TODAY = 13;
 
+// ⚡ Bolt: Hoisted static arrays and objects out of render functions
+// Impact: Prevents unnecessary memory allocation and garbage collection on every render
+const TIMELINE_DAYS = Array.from({ length: 21 }, (_, i) => i + 1);
+const MILESTONE_BY_DAY = Object.fromEntries(MILESTONES.map((m) => [m.day, m]));
+
 export function TimelineSection({
 	treatment = "calendar",
 }: {
@@ -110,9 +115,6 @@ export function TimelineSection({
 }
 
 function TimelineCalendar() {
-	const days = Array.from({ length: 21 }, (_, i) => i + 1);
-	const milestoneByDay = Object.fromEntries(MILESTONES.map((m) => [m.day, m]));
-
 	return (
 		<div className="relative pt-14 pb-3 max-md:hidden">
 			<div className="mb-4 flex justify-between">
@@ -125,8 +127,8 @@ function TimelineCalendar() {
 			</div>
 
 			<div className="relative grid grid-cols-[repeat(21,1fr)] border-hair border-t">
-				{days.map((d) => {
-					const ms = milestoneByDay[d];
+				{TIMELINE_DAYS.map((d) => {
+					const ms = MILESTONE_BY_DAY[d];
 					const isToday = d === TODAY;
 					return (
 						<motion.div
@@ -289,7 +291,7 @@ function TimelineGantt() {
 	return (
 		<div className="relative py-3 pb-14 [--meta-w:220px] max-md:hidden">
 			<div className="pointer-events-none absolute inset-0 bottom-14 ml-[var(--meta-w)] grid grid-cols-[repeat(21,1fr)] border-hair border-y">
-				{Array.from({ length: 21 }, (_, i) => i + 1).map((d) => (
+				{TIMELINE_DAYS.map((d) => (
 					<div className="relative border-hair border-r first:border-l" key={d}>
 						{[1, 7, 14, 21].includes(d) && (
 							<span className="num absolute top-[-22px] left-0 -translate-x-1/2 text-[11px] text-ink-mute tracking-[0.04em]">

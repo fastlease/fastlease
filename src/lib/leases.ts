@@ -124,7 +124,13 @@ export interface LeaseStats {
 	medianDays: number;
 }
 
+// ⚡ Bolt: Cache leaseStats result to avoid recomputing aggregates on static data
+// Impact: Bypasses expensive reduce, filter, and sort operations on subsequent calls
+let _cachedStats: LeaseStats | null = null;
+
 export function leaseStats(): LeaseStats {
+	if (_cachedStats) return _cachedStats;
+
 	const count = LEASES.length;
 	const pctOfAsking =
 		(LEASES.reduce((sum, l) => sum + l.leased / l.listed, 0) / count) * 100;
@@ -137,7 +143,9 @@ export function leaseStats(): LeaseStats {
 		sortedDays.length % 2
 			? (sortedDays[mid] ?? 0)
 			: Math.round(((sortedDays[mid - 1] ?? 0) + (sortedDays[mid] ?? 0)) / 2);
-	return { count, pctOfAsking, withinOnePct, medianDays };
+
+	_cachedStats = { count, pctOfAsking, withinOnePct, medianDays };
+	return _cachedStats;
 }
 
 export function comparables(

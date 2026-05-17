@@ -246,6 +246,7 @@ export function FormModal({
 
 	return (
 		<div
+			aria-modal="true"
 			className={cn(
 				"pointer-events-none fixed inset-0 z-[80] flex items-center justify-center bg-[color-mix(in_oklab,var(--color-ink),transparent_50%)] p-6 opacity-0 backdrop-blur-[4px] transition-opacity duration-200",
 				open && "pointer-events-auto opacity-100",
@@ -254,7 +255,7 @@ export function FormModal({
 			onKeyDown={(e) => {
 				if (e.key === "Enter" || e.key === " ") handleClose();
 			}}
-			role="button"
+			role="dialog"
 			tabIndex={-1}
 		>
 			<div
@@ -264,7 +265,7 @@ export function FormModal({
 				)}
 				onClick={(e) => e.stopPropagation()}
 				onKeyDown={(e) => e.stopPropagation()}
-				role="presentation"
+				role="document"
 			>
 				<div className="flex items-baseline justify-between px-7 pt-[22px] pb-1.5 max-sm:px-[22px]">
 					<div>
@@ -993,6 +994,7 @@ function CallMode({
 
 	return (
 		<div
+			aria-modal="true"
 			className={cn(
 				"pointer-events-none fixed inset-0 z-[80] flex items-center justify-center bg-[color-mix(in_oklab,var(--color-ink),transparent_50%)] p-6 opacity-0 backdrop-blur-[4px] transition-opacity duration-200",
 				open && "pointer-events-auto opacity-100",
@@ -1001,7 +1003,7 @@ function CallMode({
 			onKeyDown={(e) => {
 				if (e.key === "Enter" || e.key === " ") onClose();
 			}}
-			role="button"
+			role="dialog"
 			tabIndex={-1}
 		>
 			<div
@@ -1011,7 +1013,7 @@ function CallMode({
 				)}
 				onClick={(e) => e.stopPropagation()}
 				onKeyDown={(e) => e.stopPropagation()}
-				role="presentation"
+				role="document"
 			>
 				<div className="flex items-baseline justify-between px-7 pt-[26px] pb-1.5 max-sm:px-[22px]">
 					<div>

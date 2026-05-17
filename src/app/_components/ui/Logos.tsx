@@ -111,7 +111,7 @@ export const Wordmark: FC<WordmarkProps> = ({
 	return (
 		<span className={cn("inline-flex items-center gap-[10px]", className)}>
 			{variant !== "wordmark" && (
-				<LogoMark size={20} variant={variant as any} />
+				<LogoMark size={20} variant={variant as never} />
 			)}
 			<span
 				style={{
